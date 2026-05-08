@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: leadgen-cloud-app
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: COUNTRY_SUFFIX
+        value: India
