@@ -10,7 +10,7 @@
 </style>
 </head>
 <body>
-<header class="topbar"><div class="logo">🎯</div><div class="name">Lead Generator</div><div class="tag">Cloud + Database</div></header>
+<header class="topbar"><div class="logo">🎯</div><div class="name">Lead Generator</div><div class="tag">Cloud + Database</div><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span></button></header>
 <main class="wrap">
   <section class="hero"><h1>Find businesses without websites</h1><p>Search local businesses, save results to database, manage leads, and export CSV.</p></section>
   <div class="banner">This cloud-ready version uses your FastAPI backend, Google Places API, and PostgreSQL/Supabase. Keep your Google API key on the server only — never inside this HTML.</div>
@@ -226,10 +226,32 @@ function downloadCSV(rows, name) {
   a.click();
 }
 
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  document.getElementById('themeIcon').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('themeLabel').textContent = isDark ? 'Dark' : 'Light';
+  localStorage.setItem('lg-theme', newTheme);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('lg-theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  if (theme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('themeIcon').textContent = '☀️';
+    document.getElementById('themeLabel').textContent = 'Light';
+  }
+}
+
+
 function esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+initTheme();
 init();
 </script>
 </body>
