@@ -7,13 +7,14 @@ from __future__ import annotations
 
 import os
 import time
+import traceback
 from datetime import datetime, date
 from typing import Any, Dict, List, Optional
 
 import requests
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Date, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker, Session, relationship
@@ -23,9 +24,11 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./leadgen.db")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*")
 COUNTRY_SUFFIX = os.getenv("COUNTRY_SUFFIX", "India")
 
-# Render/Supabase often provide postgres://, SQLAlchemy expects postgresql://
+# Fix Supabase/Render postgres URL prefixes to include the correct driver
 if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+elif DATABASE_URL.startswith("postgresql://") and not DATABASE_URL.startswith("postgresql+"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args=connect_args)
@@ -205,7 +208,7 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
                 "date": today,
             })
             emit(f"✅ [{len(leads)}] {leads[-1]['name']} — no website", "ok")
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             emit(f"⚠️ Skipped {place.get('name', '')}: {exc}", "warn")
 
     emit(f"✅ Done! {len(leads)} leads without websites out of {len(all_places)} checked.", "ok")
@@ -223,45 +226,53 @@ def health() -> Dict[str, Any]:
 
 
 @app.post("/search")
-def search(payload: SearchRequest, db: Session = Depends(get_db)) -> Dict[str, Any]:
-    result = run_google_search(payload)
-    if result.get("error"):
+def search(payload: SearchRequest, db: Session = Depends(get_db)) -> Any:
+    try:
+        result = run_google_search(payload)
+        if result.get("error"):
+            return result
+
+        search_run = SearchRun(
+            query=payload.query,
+            location=payload.location,
+            radius=payload.radius,
+            max_results=payload.max_results,
+            total_checked=result.get("total_checked", 0),
+            leads_found=len(result.get("leads", [])),
+        )
+        db.add(search_run)
+        db.flush()
+
+        saved_leads = []
+        for item in result.get("leads", []):
+            lead = Lead(
+                search_id=search_run.id,
+                business_name=item.get("name", ""),
+                category=item.get("category", ""),
+                address=item.get("address", ""),
+                city=item.get("city", ""),
+                state=item.get("state", ""),
+                phone=item.get("phone", ""),
+                maps_url=item.get("mapsUrl", ""),
+                search_query=payload.query,
+                search_location=payload.location,
+            )
+            db.add(lead)
+            db.flush()
+            item["id"] = lead.id
+            saved_leads.append(item)
+
+        db.commit()
+        result["search_id"] = search_run.id
+        result["leads"] = saved_leads
         return result
 
-    search_run = SearchRun(
-        query=payload.query,
-        location=payload.location,
-        radius=payload.radius,
-        max_results=payload.max_results,
-        total_checked=result.get("total_checked", 0),
-        leads_found=len(result.get("leads", [])),
-    )
-    db.add(search_run)
-    db.flush()
-
-    saved_leads = []
-    for item in result.get("leads", []):
-        lead = Lead(
-            search_id=search_run.id,
-            business_name=item.get("name", ""),
-            category=item.get("category", ""),
-            address=item.get("address", ""),
-            city=item.get("city", ""),
-            state=item.get("state", ""),
-            phone=item.get("phone", ""),
-            maps_url=item.get("mapsUrl", ""),
-            search_query=payload.query,
-            search_location=payload.location,
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Search failed: {str(e)}", "events": []}
         )
-        db.add(lead)
-        db.flush()
-        item["id"] = lead.id
-        saved_leads.append(item)
-
-    db.commit()
-    result["search_id"] = search_run.id
-    result["leads"] = saved_leads
-    return result
 
 
 @app.get("/leads")
@@ -273,33 +284,55 @@ def list_leads(
     status: Optional[str] = None,
     limit: int = Query(100, ge=1, le=1000),
 ) -> Dict[str, Any]:
-    query = db.query(Lead).order_by(Lead.created_at.desc())
-    if q:
-        like = f"%{q}%"
-        query = query.filter((Lead.business_name.ilike(like)) | (Lead.search_query.ilike(like)) | (Lead.address.ilike(like)))
-    if city:
-        query = query.filter(Lead.city.ilike(city))
-    if state:
-        query = query.filter(Lead.state.ilike(state))
-    if status:
-        query = query.filter(Lead.lead_status.ilike(status))
+    try:
+        query = db.query(Lead).order_by(Lead.created_at.desc())
+        if q:
+            like = f"%{q}%"
+            query = query.filter(
+                (Lead.business_name.ilike(like)) |
+                (Lead.search_query.ilike(like)) |
+                (Lead.address.ilike(like))
+            )
+        if city:
+            query = query.filter(Lead.city.ilike(city))
+        if state:
+            query = query.filter(Lead.state.ilike(state))
+        if status:
+            query = query.filter(Lead.lead_status.ilike(status))
 
-    rows = query.limit(limit).all()
-    return {"leads": [serialize_lead(row) for row in rows]}
+        rows = query.limit(limit).all()
+        return {"leads": [serialize_lead(row) for row in rows]}
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Failed to load leads: {str(e)}"}
+        )
 
 
 @app.patch("/leads/{lead_id}")
-def update_lead(lead_id: int, payload: LeadUpdate, db: Session = Depends(get_db)) -> Dict[str, Any]:
-    lead = db.get(Lead, lead_id)
-    if not lead:
-        raise HTTPException(status_code=404, detail="Lead not found")
-    if payload.lead_status is not None:
-        lead.lead_status = payload.lead_status
-    if payload.notes is not None:
-        lead.notes = payload.notes
-    db.commit()
-    db.refresh(lead)
-    return serialize_lead(lead)
+def update_lead(lead_id: int, payload: LeadUpdate, db: Session = Depends(get_db)) -> Any:
+    try:
+        lead = db.get(Lead, lead_id)
+        if not lead:
+            raise HTTPException(status_code=404, detail="Lead not found")
+        if payload.lead_status is not None:
+            lead.lead_status = payload.lead_status
+        if payload.notes is not None:
+            lead.notes = payload.notes
+        db.commit()
+        db.refresh(lead)
+        return serialize_lead(lead)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Failed to update lead: {str(e)}"}
+        )
 
 
 def serialize_lead(lead: Lead) -> Dict[str, Any]:
