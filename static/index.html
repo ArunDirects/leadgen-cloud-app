@@ -155,14 +155,20 @@ async function runSearch() {
         state
       })
     });
-    const d = await r.json();
+    if (!r.ok) {
+      const raw = await r.text();
+      return error(`Server error ${r.status}: ${raw.slice(0, 300)}`);
+    }
+    let d;
+    try { d = await r.json(); }
+    catch (_) { return error('Backend returned a non-JSON response. Check your server logs for details.'); }
     (d.events || []).forEach(x => log(x.msg, x.type));
     if (d.error) return error(d.error);
     currentLeads = d.leads || [];
     renderCurrent();
     log(`Saved ${currentLeads.length} leads to database. Search ID: ${d.search_id}`, 'ok');
   } catch (e) {
-    error('Search failed. Check backend URL and environment variables. ' + e.message);
+    error('Search failed: ' + e.message);
   } finally {
     runBtn.disabled = false;
   }
