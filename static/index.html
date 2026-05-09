@@ -1,213 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lead Generator Cloud App</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--surface:#fff;--border:#e2e6f0;--text:#162033;--muted:#69758c;--accent:#00a96e;--accent2:#0077cc;--danger:#d92d20;--warn:#b65c00;--shadow:0 8px 30px rgba(20,30,50,.08);--radius:14px;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--input-bg:#fff;--th-bg:#f9fafb;--secondary-btn-bg:#eef3f8}[data-theme="dark"]{--bg:#0f1117;--card:#1a1d27;--surface:#1a1d27;--border:#2a2f3d;--text:#e8eaf0;--muted:#8892a4;--accent:#00c97f;--accent2:#3b9eff;--danger:#f87171;--warn:#fbbf24;--shadow:0 8px 30px rgba(0,0,0,.4);--input-bg:#12151f;--th-bg:#141720;--secondary-btn-bg:#21253a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);transition:background .2s,color .2s}.theme-toggle{margin-left:auto;background:var(--secondary-btn-bg);border:1px solid var(--border);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:700;font-family:var(--sans);cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;transition:background .2s,border-color .2s}.theme-toggle:hover{border-color:var(--accent)}.topbar{height:58px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 26px;gap:10px;position:sticky;top:0;z-index:5}.logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff}.name{font-weight:800}.tag{font-size:11px;color:var(--accent);background:rgba(0,169,110,.1);border:1px solid rgba(0,169,110,.18);padding:3px 9px;border-radius:50px}.wrap{max-width:1120px;margin:0 auto;padding:30px 18px 70px}.hero{margin-bottom:22px}.hero h1{font-size:30px;margin:0 0 6px;letter-spacing:-.8px}.hero p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--radius);padding:22px;margin-bottom:16px}.card-title{font-family:var(--mono);text-transform:uppercase;font-size:11px;color:var(--muted);letter-spacing:1px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:18px}.form-group{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}label{font-size:12px;font-weight:700}input,select,textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;font-size:14px;font-family:var(--sans);background:var(--input-bg);color:var(--text);transition:background .2s,border-color .2s,color .2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,169,110,.1)}button{border:none;border-radius:10px;padding:11px 15px;font-weight:800;font-family:var(--sans);cursor:pointer}.btn{background:var(--accent);color:white}.btn.secondary{background:var(--secondary-btn-bg);color:var(--text);border:1px solid var(--border)}.btn:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:9px;align-items:center}.status{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px}.banner{padding:12px 14px;background:rgba(0,119,204,.08);color:#075985;border:1px solid rgba(0,119,204,.16);border-radius:12px;margin-bottom:14px;font-size:13px;line-height:1.5}.error{display:none;padding:12px 14px;background:#fff1f0;color:var(--danger);border:1px solid #ffd3cf;border-left:4px solid var(--danger);border-radius:12px;margin-bottom:14px}.error.show{display:block}.log{display:none;background:#111827;color:#cbd5e1;border-radius:12px;padding:14px;max-height:150px;overflow:auto;font-family:var(--mono);font-size:11px;line-height:1.7;margin-bottom:16px}.log.show{display:block}.log .ok{color:#34d399}.log .warn{color:#fbbf24}.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{background:var(--secondary-btn-bg);border:1px solid var(--border);color:var(--text)}.tab.active{background:var(--accent);color:#fff}.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:auto;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}th{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--muted);text-align:left;background:var(--th-bg);padding:12px;border-bottom:1px solid var(--border)}td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}.badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(0,169,110,.12);color:var(--accent);border:1px solid rgba(0,169,110,.18)}.maps{color:var(--accent2);text-decoration:none;font-weight:700}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.small{font-size:12px;color:var(--muted)}.hidden{display:none}@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.row{flex-direction:column;align-items:stretch}.hero h1{font-size:25px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="logo">🎯</div><div class="name">Lead Generator</div><div class="tag">Cloud + Database</div></header>
+<main class="wrap">
+  <section class="hero"><h1>Find businesses without websites</h1><p>Search local businesses, save results to database, manage leads, and export CSV.</p></section>
+  <div class="banner">This cloud-ready version uses your FastAPI backend, Google Places API, and PostgreSQL/Supabase. Keep your Google API key on the server only — never inside this HTML.</div>
+
+  <div class="tabs">
+    <button class="tab active" id="searchTab" onclick="showTab('search')">Search</button>
+    <button class="tab" id="leadsTab" onclick="showTab('leads'); loadSavedLeads();">Saved Leads</button>
+  </div>
+
+  <section id="searchPanel">
+    <div class="card">
+      <div class="card-title">// Search Configuration</div>
+      <div class="grid">
+        <div class="form-group full">
+          <label>Backend URL</label>
+          <div class="row"><input id="serverUrl" value="" placeholder="Leave blank when hosted on same domain"/><button class="btn secondary" onclick="checkServer()">Check</button></div>
+          <div id="apiStatus" class="status">Use blank value when frontend and backend are deployed together.</div>
+        </div>
+        <div class="form-group"><label>State / UT</label><select id="stateSelect" onchange="populateCities()"></select></div>
+        <div class="form-group"><label>City</label><select id="citySelect"></select></div>
+        <div class="form-group full"><label>Business Category</label><select id="categorySelect" onchange="toggleCustom()">
+          <option value="restaurant">Restaurant</option><option value="cafe coffee shop">Cafe / Coffee Shop</option><option value="bakery">Bakery</option><option value="hotel">Hotel</option><option value="salon">Salon</option><option value="spa massage">Spa / Massage</option><option value="dentist">Dentist</option><option value="doctor clinic">Doctor / Clinic</option><option value="gym fitness center">Gym / Fitness Center</option><option value="yoga studio">Yoga Studio</option><option value="pet grooming">Pet Grooming</option><option value="veterinarian">Veterinarian</option><option value="real estate agent">Real Estate Agent</option><option value="lawyer attorney">Lawyer / Attorney</option><option value="accountant tax consultant">Accountant / Tax Consultant</option><option value="plumber">Plumber</option><option value="electrician">Electrician</option><option value="interior designer">Interior Designer</option><option value="photographer">Photographer</option><option value="digital marketing agency">Digital Marketing Agency</option><option value="custom">Custom</option>
+        </select></div>
+        <div id="customWrap" class="form-group full hidden"><label>Custom Category</label><input id="customCategory" placeholder="Example: dance school, coaching center, car repair"/></div>
+        <div class="form-group full"><label>Search Radius</label><div class="row"><input type="range" id="radius" min="1000" max="30000" step="1000" value="8000" oninput="updateRadius(this.value)"/><span class="badge" id="radiusLabel">8 km</span></div></div>
+        <div class="form-group full"><label>Max Results</label><select id="maxResults"><option value="20">20 results</option><option value="40" selected>40 results</option><option value="60">60 results</option></select></div>
+      </div>
+      <button class="btn" id="runBtn" style="width:100%;margin-top:18px" onclick="runSearch()">🔍 Generate Leads &amp; Save to Database</button>
+    </div>
+    <div id="errorCard" class="error"></div><div id="logBox" class="log"></div>
+    <div id="resultsSection" class="hidden">
+      <div class="toolbar"><div><strong>Latest Search Results</strong> <span class="badge" id="countBadge">0</span></div><button class="btn secondary" onclick="downloadCSV(currentLeads, 'latest_search_leads')">⬇ Export CSV</button></div>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Business</th><th>Category</th><th>Address</th><th>Phone</th><th>Status</th><th>Maps</th></tr></thead><tbody id="tableBody"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="leadsPanel" class="hidden">
+    <div class="toolbar"><div><strong>Saved Leads</strong> <span class="small">from your database</span></div><div class="row"><input id="leadSearch" placeholder="Filter by name, category, address"/><button class="btn secondary" onclick="loadSavedLeads()">Refresh</button><button class="btn secondary" onclick="downloadCSV(savedLeads, 'saved_leads')">Export CSV</button></div></div>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Business</th><th>Category</th><th>Address</th><th>Phone</th><th>Status</th><th>Notes</th><th>Maps</th></tr></thead><tbody id="savedBody"></tbody></table></div>
+  </section>
+</main>
 <script>
-let allLeads = [];
+const INDIA_CITIES={"Andhra Pradesh":["Visakhapatnam","Vijayawada","Guntur","Nellore","Kurnool","Tirupati","Rajahmundry","Kakinada"],"Arunachal Pradesh":["Itanagar","Naharlagun","Pasighat","Tawang"],"Assam":["Guwahati","Dibrugarh","Silchar","Jorhat","Tezpur"],"Bihar":["Patna","Gaya","Bhagalpur","Muzaffarpur","Darbhanga"],"Chhattisgarh":["Raipur","Bhilai","Bilaspur","Korba","Durg"],"Goa":["Panaji","Margao","Vasco da Gama","Mapusa"],"Gujarat":["Ahmedabad","Surat","Vadodara","Rajkot","Gandhinagar","Bhavnagar","Jamnagar"],"Haryana":["Gurugram","Faridabad","Panipat","Ambala","Hisar","Karnal"],"Himachal Pradesh":["Shimla","Dharamshala","Mandi","Solan","Kullu"],"Jharkhand":["Ranchi","Jamshedpur","Dhanbad","Bokaro","Deoghar"],"Karnataka":["Bengaluru","Mysuru","Mangaluru","Hubballi","Belagavi","Davangere","Ballari"],"Kerala":["Kochi","Thiruvananthapuram","Kozhikode","Thrissur","Kollam","Kannur"],"Madhya Pradesh":["Indore","Bhopal","Jabalpur","Gwalior","Ujjain","Sagar"],"Maharashtra":["Mumbai","Pune","Nagpur","Nashik","Thane","Aurangabad","Solapur","Kolhapur"],"Manipur":["Imphal","Thoubal","Bishnupur"],"Meghalaya":["Shillong","Tura","Jowai"],"Mizoram":["Aizawl","Lunglei","Champhai"],"Nagaland":["Kohima","Dimapur","Mokokchung"],"Odisha":["Bhubaneswar","Cuttack","Rourkela","Puri","Sambalpur","Berhampur"],"Punjab":["Ludhiana","Amritsar","Jalandhar","Patiala","Bathinda","Mohali"],"Rajasthan":["Jaipur","Jodhpur","Udaipur","Kota","Ajmer","Bikaner"],"Sikkim":["Gangtok","Namchi","Gyalshing"],"Tamil Nadu":["Chennai","Coimbatore","Madurai","Tiruchirappalli","Salem","Tirunelveli","Vellore"],"Telangana":["Hyderabad","Warangal","Nizamabad","Karimnagar","Khammam"],"Tripura":["Agartala","Udaipur","Dharmanagar"],"Uttar Pradesh":["Lucknow","Kanpur","Ghaziabad","Agra","Varanasi","Noida","Meerut","Prayagraj"],"Uttarakhand":["Dehradun","Haridwar","Roorkee","Haldwani","Rishikesh"],"West Bengal":["Kolkata","Howrah","Durgapur","Siliguri","Asansol"],"Delhi":["New Delhi","Delhi","Dwarka","Rohini","Saket"],"Jammu and Kashmir":["Srinagar","Jammu","Anantnag"],"Ladakh":["Leh","Kargil"],"Puducherry":["Puducherry","Karaikal"],"Chandigarh":["Chandigarh"]};
 
-function populateCities() {
-  const state = document.getElementById("stateSelect").value;
-  const citySelect = document.getElementById("citySelect");
+let currentLeads = [];
+let savedLeads = [];
 
-  const citiesByState = {
-    "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Tirupati"],
-    "Delhi": ["New Delhi", "Delhi"],
-    "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot"],
-    "Karnataka": ["Bengaluru", "Mysuru", "Mangalore", "Hubballi"],
-    "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik"],
-    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"],
-    "Telangana": ["Hyderabad", "Warangal", "Nizamabad"],
-    "Uttar Pradesh": ["Lucknow", "Noida", "Ghaziabad", "Kanpur"],
-    "West Bengal": ["Kolkata", "Howrah", "Durgapur"]
-  };
-
-  citySelect.innerHTML = '<option value="">— Select City —</option>';
-
-  if (citiesByState[state]) {
-    citiesByState[state].forEach(city => {
-      const option = document.createElement("option");
-      option.value = city;
-      option.textContent = city;
-      citySelect.appendChild(option);
-    });
-  }
+function base() {
+  return (document.getElementById('serverUrl').value || window.location.origin).replace(/\/$/, '');
 }
 
-function updateRadius(value) {
-  const km = value / 1000;
-  const miles = (km * 0.621371).toFixed(1);
-  document.getElementById("radiusLabel").textContent = `${km} km · ${miles} mi`;
+function init() {
+  const s = document.getElementById('stateSelect');
+  s.innerHTML = '<option value="">— Select State / UT —</option>';
+  Object.keys(INDIA_CITIES).sort().forEach(st => s.innerHTML += `<option>${st}</option>`);
+  populateCities();
+  updateRadius(document.getElementById('radius').value);
+}
+
+function populateCities() {
+  const st = document.getElementById('stateSelect').value;
+  const c = document.getElementById('citySelect');
+  c.innerHTML = '<option value="">— Select City —</option>';
+  if (!st) return;
+  (INDIA_CITIES[st] || []).forEach(x => c.innerHTML += `<option>${x}</option>`);
+}
+
+function toggleCustom() {
+  document.getElementById('customWrap').classList.toggle('hidden', document.getElementById('categorySelect').value !== 'custom');
+}
+
+function updateRadius(v) {
+  document.getElementById('radiusLabel').textContent = (v / 1000) + ' km';
+}
+
+function showTab(t) {
+  document.getElementById('searchPanel').classList.toggle('hidden', t !== 'search');
+  document.getElementById('leadsPanel').classList.toggle('hidden', t !== 'leads');
+  document.getElementById('searchTab').classList.toggle('active', t === 'search');
+  document.getElementById('leadsTab').classList.toggle('active', t === 'leads');
+}
+
+function error(m) {
+  const e = document.getElementById('errorCard');
+  e.textContent = '❌ ' + m;
+  e.classList.add('show');
+}
+
+function clearError() {
+  document.getElementById('errorCard').classList.remove('show');
+}
+
+function log(m, t = 'info') {
+  const b = document.getElementById('logBox');
+  b.classList.add('show');
+  const d = document.createElement('div');
+  d.className = t;
+  d.textContent = '[' + new Date().toLocaleTimeString() + '] ' + m;
+  b.appendChild(d);
+  b.scrollTop = b.scrollHeight;
+}
+
+async function checkServer() {
+  const st = document.getElementById('apiStatus');
+  st.textContent = 'Checking...';
+  try {
+    const r = await fetch(base() + '/health');
+    const d = await r.json();
+    st.textContent = d.status === 'ok' ? '✅ Backend connected. Database ready.' : '⚠️ Backend responded but not ready.';
+  } catch (e) {
+    st.textContent = '❌ Cannot connect to backend.';
+  }
 }
 
 async function runSearch() {
-  const button = document.querySelector(".run-btn");
+  clearError();
+  document.getElementById('logBox').innerHTML = '';
+  const state = document.getElementById('stateSelect').value;
+  const city = document.getElementById('citySelect').value;
+  const categorySelect = document.getElementById('categorySelect').value;
+  const categoryValue = categorySelect === 'custom'
+    ? document.getElementById('customCategory').value.trim()
+    : categorySelect;
+  const runBtn = document.getElementById('runBtn');
 
+  if (!state) return error('Please select a state.');
+  if (!city) return error('Please select a city.');
+  if (!categoryValue) return error('Please enter a category.');
+
+  runBtn.disabled = true;
+  log('Starting search...');
   try {
-    const state = document.getElementById("stateSelect").value;
-    const city = document.getElementById("citySelect").value;
-    const categoryElement = document.getElementById("category");
-    const category = categoryElement.value;
-    const radius = parseInt(document.getElementById("radius").value || "8000");
-    const maxResults = parseInt(document.getElementById("maxResults").value || "20");
-
-    if (!state) {
-      alert("Please select a state.");
-      return;
-    }
-
-    if (!city) {
-      alert("Please select a city.");
-      return;
-    }
-
-    if (!category) {
-      alert("Please select a business category.");
-      return;
-    }
-
-    button.disabled = true;
-    button.innerHTML = "⏳ Generating Leads...";
-
-    const payload = {
-      query: category,
-      location: `${city}, ${state}`,
-      radius: radius,
-      max_results: maxResults,
-      city: city,
-      state: state
-    };
-
-    console.log("Sending payload:", payload);
-
-    const response = await fetch("/search", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
+    const r = await fetch(base() + '/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: categoryValue,
+        location: `${city}, ${state}`,
+        radius: +document.getElementById('radius').value,
+        max_results: +document.getElementById('maxResults').value,
+        city,
+        state
+      })
     });
-
-    const data = await response.json();
-    console.log("Search response:", data);
-
-    if (data.error) {
-      alert("Error: " + data.error);
-      return;
-    }
-
-    allLeads = data.leads || [];
-
-    const resultsSection = document.getElementById("resultsSection");
-    const tableBody = document.getElementById("tableBody");
-    const countBadge = document.getElementById("countBadge");
-
-    if (countBadge) {
-      countBadge.textContent = allLeads.length;
-    }
-
-    if (tableBody) {
-      tableBody.innerHTML = "";
-
-      if (allLeads.length === 0) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align:center;padding:25px;">
-              No businesses without websites found.
-            </td>
-          </tr>
-        `;
-      } else {
-        allLeads.forEach((lead, index) => {
-          const row = document.createElement("tr");
-
-          row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${escapeHtml(lead.name || lead.business_name || "")}</td>
-            <td>${escapeHtml(lead.category || "")}</td>
-            <td>${escapeHtml(lead.address || "")}</td>
-            <td>${escapeHtml(lead.phone || "")}</td>
-            <td><span class="no-site-tag">No Website</span></td>
-            <td>
-              <a class="maps-link" href="${lead.mapsUrl || lead.maps_url || "#"}" target="_blank">
-                View ↗
-              </a>
-            </td>
-          `;
-
-          tableBody.appendChild(row);
-        });
-      }
-    }
-
-    if (resultsSection) {
-      resultsSection.style.display = "block";
-    }
-
-    alert(`Success! ${allLeads.length} leads found and saved to database.`);
-
-  } catch (error) {
-    console.error("Search error:", error);
-    alert("Something went wrong. Please check browser console and Render logs.");
+    const d = await r.json();
+    (d.events || []).forEach(x => log(x.msg, x.type));
+    if (d.error) return error(d.error);
+    currentLeads = d.leads || [];
+    renderCurrent();
+    log(`Saved ${currentLeads.length} leads to database. Search ID: ${d.search_id}`, 'ok');
+  } catch (e) {
+    error('Search failed. Check backend URL and environment variables. ' + e.message);
   } finally {
-    if (button) {
-      button.disabled = false;
-      button.innerHTML = "🔍 Generate Leads & Save to Database";
-    }
+    runBtn.disabled = false;
   }
 }
 
-function downloadCSV() {
-  if (!allLeads || allLeads.length === 0) {
-    alert("No leads available to download.");
-    return;
-  }
-
-  const headers = [
-    "Business Name",
-    "Category",
-    "Address",
-    "City",
-    "State",
-    "Phone",
-    "Google Maps URL",
-    "Date Found"
-  ];
-
-  const rows = allLeads.map(lead => [
-    lead.name || lead.business_name || "",
-    lead.category || "",
-    lead.address || "",
-    lead.city || "",
-    lead.state || "",
-    lead.phone || "",
-    lead.mapsUrl || lead.maps_url || "",
-    lead.date || lead.date_found || ""
-  ]);
-
-  const csvContent = [headers, ...rows]
-    .map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(","))
-    .join("\n");
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `leads_${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-
-  URL.revokeObjectURL(url);
+function renderCurrent() {
+  const resultsSection = document.getElementById('resultsSection');
+  const countBadge = document.getElementById('countBadge');
+  const tableBody = document.getElementById('tableBody');
+  resultsSection.classList.remove('hidden');
+  countBadge.textContent = currentLeads.length;
+  tableBody.innerHTML = currentLeads.map((l, i) =>
+    `<tr><td>${i + 1}</td><td><strong>${esc(l.name)}</strong></td><td>${esc(l.category)}</td><td>${esc(l.address)}</td><td>${esc(l.phone) || '—'}</td><td><span class="badge">New</span></td><td><a class="maps" target="_blank" href="${esc(l.mapsUrl)}">View</a></td></tr>`
+  ).join('') || '<tr><td colspan="7">No businesses without websites found.</td></tr>';
 }
 
-function escapeHtml(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+async function loadSavedLeads() {
+  const savedBody = document.getElementById('savedBody');
+  try {
+    const q = document.getElementById('leadSearch').value.trim();
+    const r = await fetch(base() + '/leads?limit=500' + (q ? '&q=' + encodeURIComponent(q) : ''));
+    const d = await r.json();
+    savedLeads = d.leads || [];
+    savedBody.innerHTML = savedLeads.map(l =>
+      `<tr><td>${l.id}</td><td><strong>${esc(l.business_name)}</strong><br><span class="small">${esc(l.search_query || '')}</span></td><td>${esc(l.category)}</td><td>${esc(l.address)}</td><td>${esc(l.phone) || '—'}</td><td><select onchange="updateLead(${l.id},this.value,null)"><option ${l.lead_status === 'New' ? 'selected' : ''}>New</option><option ${l.lead_status === 'Contacted' ? 'selected' : ''}>Contacted</option><option ${l.lead_status === 'Interested' ? 'selected' : ''}>Interested</option><option ${l.lead_status === 'Not Interested' ? 'selected' : ''}>Not Interested</option><option ${l.lead_status === 'Closed' ? 'selected' : ''}>Closed</option></select></td><td><textarea rows="2" onchange="updateLead(${l.id},null,this.value)">${esc(l.notes || '')}</textarea></td><td><a class="maps" target="_blank" href="${esc(l.maps_url)}">View</a></td></tr>`
+    ).join('') || '<tr><td colspan="8">No saved leads yet.</td></tr>';
+  } catch (e) {
+    savedBody.innerHTML = '<tr><td colspan="8">Could not load saved leads.</td></tr>';
+  }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const radiusInput = document.getElementById("radius");
-  if (radiusInput) {
-    updateRadius(radiusInput.value);
-  }
-});
+async function updateLead(id, status, notes) {
+  const body = {};
+  if (status !== null) body.lead_status = status;
+  if (notes !== null) body.notes = notes;
+  await fetch(base() + '/leads/' + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+}
+
+function downloadCSV(rows, name) {
+  if (!rows.length) return alert('No leads to export.');
+  const mapped = rows.map(l => ({
+    Business: l.name || l.business_name,
+    Category: l.category,
+    Address: l.address,
+    City: l.city,
+    State: l.state,
+    Phone: l.phone,
+    Status: l.lead_status || 'New',
+    Maps: l.mapsUrl || l.maps_url,
+    Notes: l.notes || ''
+  }));
+  const headers = Object.keys(mapped[0]);
+  const csv = [headers, ...mapped.map(r => headers.map(h => '"' + String(r[h] || '').replace(/"/g, '""') + '"'))].map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = name + '_' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+init();
 </script>
+</body>
+</html>
