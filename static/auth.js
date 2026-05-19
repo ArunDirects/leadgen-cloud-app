@@ -12,10 +12,18 @@ async function signupUser() {
   const message = document.getElementById("message");
 
   if (!email || !password) {
+    message.style.color = "#d92d20";
     message.innerText = "Please enter email and password.";
     return;
   }
 
+  if (password.length < 6) {
+    message.style.color = "#d92d20";
+    message.innerText = "Password must be at least 6 characters.";
+    return;
+  }
+
+  message.style.color = "#69758c";
   message.innerText = "Submitting request...";
 
   const { data, error } = await supabase.auth.signUp({
@@ -24,10 +32,13 @@ async function signupUser() {
   });
 
   if (error) {
+    message.style.color = "#d92d20";
     message.innerText = error.message;
     return;
   }
 
+  // data.user exists even before email confirmation.
+  // Insert into user_access immediately so admin can see & approve the request.
   if (data.user) {
     const { error: insertError } = await supabase.from("user_access").insert([
       {
@@ -38,13 +49,21 @@ async function signupUser() {
     ]);
 
     if (insertError) {
-      message.innerText = "Signup created, but approval request was not saved: " + insertError.message;
+      // Duplicate signup — user already exists
+      if (insertError.code === "23505") {
+        message.style.color = "#d92d20";
+        message.innerText = "This email has already submitted a request. Please wait for approval or contact the admin.";
+      } else {
+        message.style.color = "#d92d20";
+        message.innerText = "Request recorded, but could not save to approval queue: " + insertError.message;
+      }
       return;
     }
   }
 
+  message.style.color = "#00a96e";
   message.innerText =
-    "Your signup request has been submitted. Please wait for admin approval.";
+    "✅ Request submitted! Please check your email and confirm your address, then wait for admin approval before logging in.";
 }
 
 async function loginUser() {
@@ -53,10 +72,12 @@ async function loginUser() {
   const message = document.getElementById("message");
 
   if (!email || !password) {
+    message.style.color = "#d92d20";
     message.innerText = "Please enter email and password.";
     return;
   }
 
+  message.style.color = "#69758c";
   message.innerText = "Checking login...";
 
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -65,7 +86,15 @@ async function loginUser() {
   });
 
   if (error) {
-    message.innerText = error.message;
+    message.style.color = "#d92d20";
+    // Make "Email not confirmed" friendlier
+    if (error.message.toLowerCase().includes("email not confirmed")) {
+      message.innerText = "Please confirm your email address first. Check your inbox for a confirmation link.";
+    } else if (error.message.toLowerCase().includes("invalid login")) {
+      message.innerText = "Incorrect email or password.";
+    } else {
+      message.innerText = error.message;
+    }
     return;
   }
 
@@ -78,6 +107,7 @@ async function loginUser() {
     .single();
 
   if (accessError || !accessData) {
+    message.style.color = "#d92d20";
     message.innerText = "Access request not found. Please sign up first.";
     return;
   }
@@ -85,9 +115,11 @@ async function loginUser() {
   if (accessData.status === "approved") {
     window.location.href = "index.html";
   } else if (accessData.status === "rejected") {
-    message.innerText = "Your access request has been rejected.";
+    message.style.color = "#d92d20";
+    message.innerText = "Your access request has been rejected. Please contact the admin.";
   } else {
-    message.innerText = "Your account is still pending approval.";
+    message.style.color = "#b65c00";
+    message.innerText = "⏳ Your account is pending admin approval. You'll be able to log in once approved.";
   }
 }
 
@@ -107,13 +139,26 @@ async function checkAccess() {
     .eq("user_id", user.id)
     .single();
 
-  if (error || !accessData || accessData.status !== "approved") {
+  if (error || !accessData) {
+    // No access record — sign out and redirect
+    await supabase.auth.signOut();
+    window.location.href = "login.html";
+    return;
+  }
+
+  if (accessData.status !== "approved") {
+    // Sign them out so stale session doesn't persist
+    await supabase.auth.signOut();
     document.body.innerHTML = `
-      <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 520px; margin: 60px auto; background: white; border-radius: 12px;">
-        <h2>Access Pending</h2>
-        <p>Your account is not approved yet.</p>
-        <p>Please contact the admin or wait for approval.</p>
-        <button style="padding: 10px 18px; background: #111827; color: white; border: none; border-radius: 8px;" onclick="logoutUser()">Logout</button>
+      <div style="font-family:'DM Sans',Arial,sans-serif;padding:40px;max-width:480px;margin:80px auto;background:#fff;border:1px solid #e2e6f0;border-radius:16px;box-shadow:0 8px 30px rgba(20,30,50,.08);text-align:center;">
+        <div style="font-size:40px;margin-bottom:16px;">${accessData.status === "rejected" ? "🚫" : "⏳"}</div>
+        <h2 style="margin:0 0 10px;color:#162033;">${accessData.status === "rejected" ? "Access Denied" : "Approval Pending"}</h2>
+        <p style="color:#69758c;margin:0 0 24px;">
+          ${accessData.status === "rejected"
+            ? "Your access request has been rejected. Please contact the admin."
+            : "Your account is awaiting admin approval. You will be able to log in once approved."}
+        </p>
+        <a href="login.html" style="display:inline-block;padding:10px 24px;background:#00a96e;color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Back to Login</a>
       </div>
     `;
     return;

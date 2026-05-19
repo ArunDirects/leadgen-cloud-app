@@ -11,10 +11,12 @@
     .box{width:100%;max-width:420px;background:#fff;border:1px solid #e2e6f0;border-radius:16px;box-shadow:0 8px 30px rgba(20,30,50,.08);padding:30px}
     h1{margin:0 0 8px;font-size:26px}
     p{color:#69758c}
-    input{width:100%;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px;font-size:15px;margin-top:12px}
-    button{width:100%;border:none;border-radius:10px;padding:12px 15px;font-weight:800;cursor:pointer;background:#00a96e;color:#fff;margin-top:14px}
+    input{width:100%;border:1.5px solid #e2e6f0;border-radius:10px;padding:12px;font-size:15px;margin-top:12px;outline:none;transition:border-color .15s}
+    input:focus{border-color:#00a96e;box-shadow:0 0 0 3px rgba(0,169,110,.1)}
+    button{width:100%;border:none;border-radius:10px;padding:12px 15px;font-weight:800;cursor:pointer;background:#00a96e;color:#fff;margin-top:14px;font-size:15px}
+    button:hover{opacity:.88}
     a{display:block;text-align:center;margin-top:16px;color:#0077cc;text-decoration:none;font-weight:700}
-    #message{font-size:14px;color:#d92d20;min-height:20px}
+    #message{font-size:14px;color:#d92d20;min-height:20px;margin-top:10px}
   </style>
 </head>
 <body>
