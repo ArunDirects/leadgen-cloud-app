@@ -16,6 +16,8 @@ async function signupUser() {
     return;
   }
 
+  message.innerText = "Submitting request...";
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password
@@ -27,13 +29,18 @@ async function signupUser() {
   }
 
   if (data.user) {
-    await supabase.from("user_access").insert([
+    const { error: insertError } = await supabase.from("user_access").insert([
       {
         user_id: data.user.id,
         email: email,
         status: "pending"
       }
     ]);
+
+    if (insertError) {
+      message.innerText = "Signup created, but approval request was not saved: " + insertError.message;
+      return;
+    }
   }
 
   message.innerText =
@@ -49,6 +56,8 @@ async function loginUser() {
     message.innerText = "Please enter email and password.";
     return;
   }
+
+  message.innerText = "Checking login...";
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -69,12 +78,14 @@ async function loginUser() {
     .single();
 
   if (accessError || !accessData) {
-    message.innerText = "Access request not found.";
+    message.innerText = "Access request not found. Please sign up first.";
     return;
   }
 
   if (accessData.status === "approved") {
     window.location.href = "index.html";
+  } else if (accessData.status === "rejected") {
+    message.innerText = "Your access request has been rejected.";
   } else {
     message.innerText = "Your account is still pending approval.";
   }
@@ -98,16 +109,21 @@ async function checkAccess() {
 
   if (error || !accessData || accessData.status !== "approved") {
     document.body.innerHTML = `
-      <div style="font-family: Arial; padding: 40px;">
+      <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 520px; margin: 60px auto; background: white; border-radius: 12px;">
         <h2>Access Pending</h2>
         <p>Your account is not approved yet.</p>
-        <button onclick="logoutUser()">Logout</button>
+        <p>Please contact the admin or wait for approval.</p>
+        <button style="padding: 10px 18px; background: #111827; color: white; border: none; border-radius: 8px;" onclick="logoutUser()">Logout</button>
       </div>
     `;
     return;
   }
 
-  document.getElementById("app").style.display = "block";
+  if (typeof startProtectedApp === "function") {
+    startProtectedApp();
+  } else {
+    document.getElementById("app").style.display = "block";
+  }
 }
 
 async function logoutUser() {
