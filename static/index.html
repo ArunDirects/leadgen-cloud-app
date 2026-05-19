@@ -282,6 +282,14 @@ function esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+<script>
+window.addEventListener("load", function () {
+  if (typeof checkAccess === "function") {
+    checkAccess();
+  } else {
+    console.error("auth.js failed to load");
+  }
+});
 </script>
 </body>
 </html>
