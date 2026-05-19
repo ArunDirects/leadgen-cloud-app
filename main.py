@@ -15,6 +15,7 @@ import requests
 from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Date, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker, Session, relationship
@@ -79,6 +80,9 @@ class Lead(Base):
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Lead Generator API", version="1.0.0")
+
+# Serve files from the static folder, such as auth.js, login.html, and signup.html
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 origins = [o.strip() for o in ALLOWED_ORIGINS.split(",")] if ALLOWED_ORIGINS else ["*"]
 app.add_middleware(
@@ -219,6 +223,16 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
 def home() -> FileResponse:
     return FileResponse("static/index.html")
 
+
+
+@app.get("/login.html")
+def login_page() -> FileResponse:
+    return FileResponse("static/login.html")
+
+
+@app.get("/signup.html")
+def signup_page() -> FileResponse:
+    return FileResponse("static/signup.html")
 
 @app.get("/health")
 def health() -> Dict[str, Any]:
