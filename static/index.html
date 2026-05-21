@@ -6,29 +6,19 @@
 <title>Lead Generator Cloud App</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
-:root{--bg:#f5f6fa;--card:#fff;--surface:#fff;--border:#e2e6f0;--text:#162033;--muted:#69758c;--accent:#00a96e;--accent2:#0077cc;--danger:#d92d20;--warn:#b65c00;--shadow:0 8px 30px rgba(20,30,50,.08);--radius:14px;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--input-bg:#fff;--th-bg:#f9fafb;--secondary-btn-bg:#eef3f8}[data-theme="dark"]{--bg:#0f1117;--card:#1a1d27;--surface:#1a1d27;--border:#2a2f3d;--text:#e8eaf0;--muted:#8892a4;--accent:#00c97f;--accent2:#3b9eff;--danger:#f87171;--warn:#fbbf24;--shadow:0 8px 30px rgba(0,0,0,.4);--input-bg:#12151f;--th-bg:#141720;--secondary-btn-bg:#21253a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);transition:background .2s,color .2s}.theme-toggle{margin-left:auto;background:var(--secondary-btn-bg);border:1px solid var(--border);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:700;font-family:var(--sans);cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;transition:background .2s,border-color .2s}.theme-toggle:hover{border-color:var(--accent)}.topbar{height:58px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 26px;gap:10px;position:sticky;top:0;z-index:5}.logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff}.name{font-weight:800}.tag{font-size:11px;color:var(--accent);background:rgba(0,169,110,.1);border:1px solid rgba(0,169,110,.18);padding:3px 9px;border-radius:50px}.wrap{max-width:1120px;margin:0 auto;padding:30px 18px 70px}.hero{margin-bottom:22px}.hero h1{font-size:30px;margin:0 0 6px;letter-spacing:-.8px}.hero p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--radius);padding:22px;margin-bottom:16px}.card-title{font-family:var(--mono);text-transform:uppercase;font-size:11px;color:var(--muted);letter-spacing:1px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:18px}.form-group{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}label{font-size:12px;font-weight:700}input,select,textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;font-size:14px;font-family:var(--sans);background:var(--input-bg);color:var(--text);transition:background .2s,border-color .2s,color .2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,169,110,.1)}button{border:none;border-radius:10px;padding:11px 15px;font-weight:800;font-family:var(--sans);cursor:pointer}.btn{background:var(--accent);color:white}.btn.secondary{background:var(--secondary-btn-bg);color:var(--text);border:1px solid var(--border)}.btn:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:9px;align-items:center}.status{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px}.banner{padding:12px 14px;background:rgba(0,119,204,.08);color:#075985;border:1px solid rgba(0,119,204,.16);border-radius:12px;margin-bottom:14px;font-size:13px;line-height:1.5}.error{display:none;padding:12px 14px;background:#fff1f0;color:var(--danger);border:1px solid #ffd3cf;border-left:4px solid var(--danger);border-radius:12px;margin-bottom:14px}.error.show{display:block}.log{display:none;background:#111827;color:#cbd5e1;border-radius:12px;padding:14px;max-height:150px;overflow:auto;font-family:var(--mono);font-size:11px;line-height:1.7;margin-bottom:16px}.log.show{display:block}.log .ok{color:#34d399}.log .warn{color:#fbbf24}.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{background:var(--secondary-btn-bg);border:1px solid var(--border);color:var(--text)}.tab.active{background:var(--accent);color:#fff}.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:auto;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}th{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--muted);text-align:left;background:var(--th-bg);padding:12px;border-bottom:1px solid var(--border)}td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}.badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(0,169,110,.12);color:var(--accent);border:1px solid rgba(0,169,110,.18)}.maps{color:var(--accent2);text-decoration:none;font-weight:700}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.small{font-size:12px;color:var(--muted)}.hidden{display:none}@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.row{flex-direction:column;align-items:stretch}.hero h1{font-size:25px}}
-
-.auth-logout{
-  margin-left:8px;
-  background:var(--secondary-btn-bg);
-  border:1px solid var(--border);
-  border-radius:50px;
-  padding:6px 14px;
-  font-size:12px;
-  font-weight:700;
-  font-family:var(--sans);
-  cursor:pointer;
-  color:var(--text);
-}
-.auth-logout:hover{border-color:var(--danger);color:var(--danger)}
-
+:root{--bg:#f5f6fa;--card:#fff;--surface:#fff;--border:#e2e6f0;--text:#162033;--muted:#69758c;--accent:#00a96e;--accent2:#0077cc;--danger:#d92d20;--warn:#b65c00;--shadow:0 8px 30px rgba(20,30,50,.08);--radius:14px;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--input-bg:#fff;--th-bg:#f9fafb;--secondary-btn-bg:#eef3f8}[data-theme="dark"]{--bg:#0f1117;--card:#1a1d27;--surface:#1a1d27;--border:#2a2f3d;--text:#e8eaf0;--muted:#8892a4;--accent:#00c97f;--accent2:#3b9eff;--danger:#f87171;--warn:#fbbf24;--shadow:0 8px 30px rgba(0,0,0,.4);--input-bg:#12151f;--th-bg:#141720;--secondary-btn-bg:#21253a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);transition:background .2s,color .2s}.theme-toggle{margin-left:auto;background:var(--secondary-btn-bg);border:1px solid var(--border);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:700;font-family:var(--sans);cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;transition:background .2s,border-color .2s}.theme-toggle:hover{border-color:var(--accent)}.topbar{height:58px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 26px;gap:10px;position:sticky;top:0;z-index:5}.logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff}.name{font-weight:800}.tag{font-size:11px;color:var(--accent);background:rgba(0,169,110,.1);border:1px solid rgba(0,169,110,.18);padding:3px 9px;border-radius:50px}.wrap{max-width:1120px;margin:0 auto;padding:30px 18px 70px}.hero{margin-bottom:22px}.hero h1{font-size:30px;margin:0 0 6px;letter-spacing:-.8px}.hero p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--radius);padding:22px;margin-bottom:16px}.card-title{font-family:var(--mono);text-transform:uppercase;font-size:11px;color:var(--muted);letter-spacing:1px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:18px}.form-group{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}label{font-size:12px;font-weight:700}input,select,textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;font-size:14px;font-family:var(--sans);background:var(--input-bg);color:var(--text);transition:background .2s,border-color .2s,color .2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,169,110,.1)}button{border:none;border-radius:10px;padding:11px 15px;font-weight:800;font-family:var(--sans);cursor:pointer}.btn{background:var(--accent);color:white}.btn.secondary{background:var(--secondary-btn-bg);color:var(--text);border:1px solid var(--border)}.btn:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:9px;align-items:center}.status{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px}.banner{padding:12px 14px;background:rgba(0,119,204,.08);color:#075985;border:1px solid rgba(0,119,204,.16);border-radius:12px;margin-bottom:14px;font-size:13px;line-height:1.5}.error{display:none;padding:12px 14px;background:#fff1f0;color:var(--danger);border:1px solid #ffd3cf;border-left:4px solid var(--danger);border-radius:12px;margin-bottom:14px}.error.show{display:block}.log{display:none;background:#111827;color:#cbd5e1;border-radius:12px;padding:14px;max-height:150px;overflow:auto;font-family:var(--mono);font-size:11px;line-height:1.7;margin-bottom:16px}.log.show{display:block}.log .ok{color:#34d399}.log .warn{color:#fbbf24}.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{background:var(--secondary-btn-bg);border:1px solid var(--border);color:var(--text)}.tab.active{background:var(--accent);color:#fff}.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:auto;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}th{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--muted);text-align:left;background:var(--th-bg);padding:12px;border-bottom:1px solid var(--border)}td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}.badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(0,169,110,.12);color:var(--accent);border:1px solid rgba(0,169,110,.18)}.maps{color:var(--accent2);text-decoration:none;font-weight:700}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.small{font-size:12px;color:var(--muted)}.hidden{display:none}
+/* location loader spinner */
+.loc-loading{font-size:12px;color:var(--muted);font-family:var(--mono);padding:8px 0;display:none}.loc-loading.show{display:block}
+select:disabled{opacity:.5;cursor:not-allowed}
+.auth-logout{margin-left:8px;background:var(--secondary-btn-bg);border:1px solid var(--border);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:700;font-family:var(--sans);cursor:pointer;color:var(--text)}.auth-logout:hover{border-color:var(--danger);color:var(--danger)}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.row{flex-direction:column;align-items:stretch}.hero h1{font-size:25px}}
 </style>
 </head>
 <body>
 <div id="app" style="display:none;">
 <header class="topbar"><div class="logo">🎯</div><div class="name">Lead Generator</div><div class="tag">Cloud + Database</div><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span></button><button class="auth-logout" onclick="logoutUser()">Logout</button></header>
 <main class="wrap">
-  <section class="hero"><h1>Find businesses without websites</h1><p>Search local businesses, save results to database, manage leads, and export CSV.</p></section>
+  <section class="hero"><h1>Find businesses without websites</h1><p>Search local businesses worldwide, save results to database, manage leads, and export CSV.</p></section>
   <div class="banner">This cloud-ready version uses your FastAPI backend, Google Places API, and PostgreSQL/Supabase. Keep your Google API key on the server only — never inside this HTML.</div>
 
   <div class="tabs">
@@ -45,8 +35,36 @@
           <div class="row"><input id="serverUrl" value="" placeholder="Leave blank when hosted on same domain"/><button class="btn secondary" onclick="checkServer()">Check</button></div>
           <div id="apiStatus" class="status">Use blank value when frontend and backend are deployed together.</div>
         </div>
-        <div class="form-group"><label>State / UT</label><select id="stateSelect" onchange="populateCities()"></select></div>
-        <div class="form-group"><label>City</label><select id="citySelect"></select></div>
+
+        <!-- WORLDWIDE LOCATION SELECTORS -->
+        <div class="form-group full">
+          <label>Country</label>
+          <select id="countrySelect" onchange="onCountryChange()">
+            <option value="">— Loading countries… —</option>
+          </select>
+          <div id="countryLoading" class="loc-loading">Loading countries…</div>
+        </div>
+        <div class="form-group">
+          <label>State / Region / Province</label>
+          <select id="stateSelect" onchange="onStateChange()" disabled>
+            <option value="">— Select country first —</option>
+          </select>
+          <div id="stateLoading" class="loc-loading">Loading states…</div>
+        </div>
+        <div class="form-group">
+          <label>City / District</label>
+          <select id="citySelect" disabled>
+            <option value="">— Select state first —</option>
+          </select>
+          <div id="cityLoading" class="loc-loading">Loading cities…</div>
+        </div>
+        <!-- Manual city fallback if API returns no cities -->
+        <div id="cityManualWrap" class="form-group full hidden">
+          <label>City (enter manually)</label>
+          <input id="cityManual" placeholder="Type the city or district name"/>
+          <div class="status">No city data available for this region — please type it in.</div>
+        </div>
+
         <div class="form-group full"><label>Business Category</label><select id="categorySelect" onchange="toggleCustom()">
           <option value="restaurant">Restaurant</option><option value="cafe coffee shop">Cafe / Coffee Shop</option><option value="bakery">Bakery</option><option value="hotel">Hotel</option><option value="salon">Salon</option><option value="spa massage">Spa / Massage</option><option value="dentist">Dentist</option><option value="doctor clinic">Doctor / Clinic</option><option value="gym fitness center">Gym / Fitness Center</option><option value="yoga studio">Yoga Studio</option><option value="pet grooming">Pet Grooming</option><option value="veterinarian">Veterinarian</option><option value="real estate agent">Real Estate Agent</option><option value="lawyer attorney">Lawyer / Attorney</option><option value="accountant tax consultant">Accountant / Tax Consultant</option><option value="plumber">Plumber</option><option value="electrician">Electrician</option><option value="interior designer">Interior Designer</option><option value="photographer">Photographer</option><option value="digital marketing agency">Digital Marketing Agency</option><option value="custom">Custom</option>
         </select></div>
@@ -72,29 +90,160 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/static/auth.js"></script>
 <script>
-const INDIA_CITIES={"Andhra Pradesh":["Visakhapatnam","Vijayawada","Guntur","Nellore","Kurnool","Tirupati","Rajahmundry","Kakinada"],"Arunachal Pradesh":["Itanagar","Naharlagun","Pasighat","Tawang"],"Assam":["Guwahati","Dibrugarh","Silchar","Jorhat","Tezpur"],"Bihar":["Patna","Gaya","Bhagalpur","Muzaffarpur","Darbhanga"],"Chhattisgarh":["Raipur","Bhilai","Bilaspur","Korba","Durg"],"Goa":["Panaji","Margao","Vasco da Gama","Mapusa"],"Gujarat":["Ahmedabad","Surat","Vadodara","Rajkot","Gandhinagar","Bhavnagar","Jamnagar"],"Haryana":["Gurugram","Faridabad","Panipat","Ambala","Hisar","Karnal"],"Himachal Pradesh":["Shimla","Dharamshala","Mandi","Solan","Kullu"],"Jharkhand":["Ranchi","Jamshedpur","Dhanbad","Bokaro","Deoghar"],"Karnataka":["Bengaluru","Mysuru","Mangaluru","Hubballi","Belagavi","Davangere","Ballari"],"Kerala":["Kochi","Thiruvananthapuram","Kozhikode","Thrissur","Kollam","Kannur"],"Madhya Pradesh":["Indore","Bhopal","Jabalpur","Gwalior","Ujjain","Sagar"],"Maharashtra":["Mumbai","Pune","Nagpur","Nashik","Thane","Aurangabad","Solapur","Kolhapur"],"Manipur":["Imphal","Thoubal","Bishnupur"],"Meghalaya":["Shillong","Tura","Jowai"],"Mizoram":["Aizawl","Lunglei","Champhai"],"Nagaland":["Kohima","Dimapur","Mokokchung"],"Odisha":["Bhubaneswar","Cuttack","Rourkela","Puri","Sambalpur","Berhampur"],"Punjab":["Ludhiana","Amritsar","Jalandhar","Patiala","Bathinda","Mohali"],"Rajasthan":["Jaipur","Jodhpur","Udaipur","Kota","Ajmer","Bikaner"],"Sikkim":["Gangtok","Namchi","Gyalshing"],"Tamil Nadu":["Chennai","Coimbatore","Madurai","Tiruchirappalli","Salem","Tirunelveli","Vellore"],"Telangana":["Hyderabad","Warangal","Nizamabad","Karimnagar","Khammam"],"Tripura":["Agartala","Udaipur","Dharmanagar"],"Uttar Pradesh":["Lucknow","Kanpur","Ghaziabad","Agra","Varanasi","Noida","Meerut","Prayagraj"],"Uttarakhand":["Dehradun","Haridwar","Roorkee","Haldwani","Rishikesh"],"West Bengal":["Kolkata","Howrah","Durgapur","Siliguri","Asansol"],"Delhi":["New Delhi","Delhi","Dwarka","Rohini","Saket"],"Jammu and Kashmir":["Srinagar","Jammu","Anantnag"],"Ladakh":["Leh","Kargil"],"Puducherry":["Puducherry","Karaikal"],"Chandigarh":["Chandigarh"]};
+/* ─── Location API (countriesnow.space — free, no key required) ─── */
+const GEO_BASE = 'https://countriesnow.space/api/v0.1';
 
 let currentLeads = [];
 let savedLeads = [];
+let selectedCountryName = '';
 
 function base() {
   return (document.getElementById('serverUrl').value || window.location.origin).replace(/\/$/, '');
 }
 
+/* ─── Init ─── */
 function init() {
-  const s = document.getElementById('stateSelect');
-  s.innerHTML = '<option value="">— Select State / UT —</option>';
-  Object.keys(INDIA_CITIES).sort().forEach(st => s.innerHTML += `<option>${st}</option>`);
-  populateCities();
   updateRadius(document.getElementById('radius').value);
+  loadCountries();
 }
 
-function populateCities() {
-  const st = document.getElementById('stateSelect').value;
-  const c = document.getElementById('citySelect');
-  c.innerHTML = '<option value="">— Select City —</option>';
-  if (!st) return;
-  (INDIA_CITIES[st] || []).forEach(x => c.innerHTML += `<option>${x}</option>`);
+/* ─── Country loader ─── */
+async function loadCountries() {
+  const sel = document.getElementById('countrySelect');
+  const loader = document.getElementById('countryLoading');
+  loader.classList.add('show');
+  try {
+    const r = await fetch(GEO_BASE + '/countries');
+    const d = await r.json();
+    const countries = (d.data || []).map(c => c.country).sort();
+    sel.innerHTML = '<option value="">— Select Country —</option>';
+    countries.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c;
+      o.textContent = c;
+      sel.appendChild(o);
+    });
+  } catch (e) {
+    sel.innerHTML = '<option value="">⚠ Could not load — type city manually</option>';
+    document.getElementById('cityManualWrap').classList.remove('hidden');
+  } finally {
+    loader.classList.remove('show');
+  }
+}
+
+/* ─── Country → State ─── */
+async function onCountryChange() {
+  const country = document.getElementById('countrySelect').value;
+  selectedCountryName = country;
+  const stateSel = document.getElementById('stateSelect');
+  const citySel = document.getElementById('citySelect');
+  const stateLoader = document.getElementById('stateLoading');
+  const cityManualWrap = document.getElementById('cityManualWrap');
+
+  // Reset downstream
+  stateSel.innerHTML = '<option value="">— Loading… —</option>';
+  stateSel.disabled = true;
+  citySel.innerHTML = '<option value="">— Select state first —</option>';
+  citySel.disabled = true;
+  cityManualWrap.classList.add('hidden');
+
+  if (!country) {
+    stateSel.innerHTML = '<option value="">— Select country first —</option>';
+    return;
+  }
+
+  stateLoader.classList.add('show');
+  try {
+    const r = await fetch(GEO_BASE + '/countries/states', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ country })
+    });
+    const d = await r.json();
+    const states = (d.data && d.data.states) ? d.data.states.map(s => s.name).sort() : [];
+    if (states.length === 0) {
+      // Country has no state data — skip to city manual entry
+      stateSel.innerHTML = '<option value="(none)">(No state/region data)</option>';
+      stateSel.disabled = false;
+      cityManualWrap.classList.remove('hidden');
+    } else {
+      stateSel.innerHTML = '<option value="">— Select State / Region —</option>';
+      states.forEach(s => {
+        const o = document.createElement('option');
+        o.value = s;
+        o.textContent = s;
+        stateSel.appendChild(o);
+      });
+      stateSel.disabled = false;
+    }
+  } catch (e) {
+    stateSel.innerHTML = '<option value="">⚠ Could not load states</option>';
+    cityManualWrap.classList.remove('hidden');
+    stateSel.disabled = false;
+  } finally {
+    stateLoader.classList.remove('show');
+  }
+}
+
+/* ─── State → City ─── */
+async function onStateChange() {
+  const country = document.getElementById('countrySelect').value;
+  const state = document.getElementById('stateSelect').value;
+  const citySel = document.getElementById('citySelect');
+  const cityLoader = document.getElementById('cityLoading');
+  const cityManualWrap = document.getElementById('cityManualWrap');
+
+  citySel.innerHTML = '<option value="">— Loading… —</option>';
+  citySel.disabled = true;
+  cityManualWrap.classList.add('hidden');
+
+  if (!state || state === '(none)') {
+    citySel.innerHTML = '<option value="">— N/A —</option>';
+    cityManualWrap.classList.remove('hidden');
+    return;
+  }
+
+  cityLoader.classList.add('show');
+  try {
+    const r = await fetch(GEO_BASE + '/countries/state/cities', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ country, state })
+    });
+    const d = await r.json();
+    const cities = (d.data || []).sort();
+    if (cities.length === 0) {
+      citySel.innerHTML = '<option value="">— No city data —</option>';
+      cityManualWrap.classList.remove('hidden');
+    } else {
+      citySel.innerHTML = '<option value="">— Select City / District —</option>';
+      cities.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c;
+        o.textContent = c;
+        citySel.appendChild(o);
+      });
+      citySel.disabled = false;
+    }
+  } catch (e) {
+    citySel.innerHTML = '<option value="">⚠ Could not load cities</option>';
+    cityManualWrap.classList.remove('hidden');
+    citySel.disabled = false;
+  } finally {
+    cityLoader.classList.remove('show');
+  }
+}
+
+/* ─── Helpers ─── */
+function getLocationString() {
+  const country = document.getElementById('countrySelect').value || '';
+  const state = document.getElementById('stateSelect').value || '';
+  const cityDropdown = document.getElementById('citySelect').value || '';
+  const cityManual = document.getElementById('cityManual') ? document.getElementById('cityManual').value.trim() : '';
+  const city = cityDropdown || cityManual;
+
+  const parts = [city, state !== '(none)' ? state : '', country].filter(Boolean);
+  return { country, state: state !== '(none)' ? state : '', city, locationString: parts.join(', ') };
 }
 
 function toggleCustom() {
@@ -132,6 +281,7 @@ function log(m, t = 'info') {
   b.scrollTop = b.scrollHeight;
 }
 
+/* ─── Server check ─── */
 async function checkServer() {
   const st = document.getElementById('apiStatus');
   st.textContent = 'Checking...';
@@ -144,34 +294,35 @@ async function checkServer() {
   }
 }
 
+/* ─── Search ─── */
 async function runSearch() {
   clearError();
   document.getElementById('logBox').innerHTML = '';
-  const state = document.getElementById('stateSelect').value;
-  const city = document.getElementById('citySelect').value;
+  const loc = getLocationString();
   const categorySelect = document.getElementById('categorySelect').value;
   const categoryValue = categorySelect === 'custom'
     ? document.getElementById('customCategory').value.trim()
     : categorySelect;
   const runBtn = document.getElementById('runBtn');
 
-  if (!state) return error('Please select a state.');
-  if (!city) return error('Please select a city.');
+  if (!loc.country) return error('Please select a country.');
+  if (!loc.city) return error('Please enter or select a city.');
   if (!categoryValue) return error('Please enter a category.');
 
   runBtn.disabled = true;
-  log('Starting search...');
+  log('Starting search for "' + categoryValue + '" in ' + loc.locationString + '…');
   try {
     const r = await fetch(base() + '/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query: categoryValue,
-        location: `${city}, ${state}`,
+        location: loc.locationString,
         radius: +document.getElementById('radius').value,
         max_results: +document.getElementById('maxResults').value,
-        city,
-        state
+        city: loc.city,
+        state: loc.state,
+        country: loc.country
       })
     });
     if (!r.ok) {
@@ -193,6 +344,7 @@ async function runSearch() {
   }
 }
 
+/* ─── Render results ─── */
 function renderCurrent() {
   const resultsSection = document.getElementById('resultsSection');
   const countBadge = document.getElementById('countBadge');
@@ -204,6 +356,7 @@ function renderCurrent() {
   ).join('') || '<tr><td colspan="7">No businesses without websites found.</td></tr>';
 }
 
+/* ─── Saved leads ─── */
 async function loadSavedLeads() {
   const savedBody = document.getElementById('savedBody');
   try {
@@ -212,7 +365,7 @@ async function loadSavedLeads() {
     const d = await r.json();
     savedLeads = d.leads || [];
     savedBody.innerHTML = savedLeads.map(l =>
-      `<tr><td>${l.id}</td><td><strong>${esc(l.business_name)}</strong><br><span class="small">${esc(l.search_query || '')}</span></td><td>${esc(l.category)}</td><td>${esc(l.address)}</td><td>${esc(l.phone) || '—'}</td><td><select onchange="updateLead(${l.id},this.value,null)"><option ${l.lead_status === 'New' ? 'selected' : ''}>New</option><option ${l.lead_status === 'Contacted' ? 'selected' : ''}>Contacted</option><option ${l.lead_status === 'Interested' ? 'selected' : ''}>Interested</option><option ${l.lead_status === 'Not Interested' ? 'selected' : ''}>Not Interested</option><option ${l.lead_status === 'Closed' ? 'selected' : ''}>Closed</option></select></td><td><textarea rows="2" onchange="updateLead(${l.id},null,this.value)">${esc(l.notes || '')}</textarea></td><td><a class="maps" target="_blank" href="${esc(l.maps_url)}">View</a></td></tr>`
+      `<tr><td>${l.id}</td><td><strong>${esc(l.business_name)}</strong><br><span class="small">${esc(l.search_query || '')}</span></td><td>${esc(l.category)}</td><td>${esc(l.address)}</td><td>${esc(l.phone) || '—'}</td><td><select onchange="updateLead(${l.id},this.value,null)"><option ${l.lead_status==='New'?'selected':''}>New</option><option ${l.lead_status==='Contacted'?'selected':''}>Contacted</option><option ${l.lead_status==='Interested'?'selected':''}>Interested</option><option ${l.lead_status==='Not Interested'?'selected':''}>Not Interested</option><option ${l.lead_status==='Closed'?'selected':''}>Closed</option></select></td><td><textarea rows="2" onchange="updateLead(${l.id},null,this.value)">${esc(l.notes || '')}</textarea></td><td><a class="maps" target="_blank" href="${esc(l.maps_url)}">View</a></td></tr>`
     ).join('') || '<tr><td colspan="8">No saved leads yet.</td></tr>';
   } catch (e) {
     savedBody.innerHTML = '<tr><td colspan="8">Could not load saved leads.</td></tr>';
@@ -230,6 +383,7 @@ async function updateLead(id, status, notes) {
   });
 }
 
+/* ─── CSV export ─── */
 function downloadCSV(rows, name) {
   if (!rows.length) return alert('No leads to export.');
   const mapped = rows.map(l => ({
@@ -238,6 +392,7 @@ function downloadCSV(rows, name) {
     Address: l.address,
     City: l.city,
     State: l.state,
+    Country: l.country || '',
     Phone: l.phone,
     Status: l.lead_status || 'New',
     Maps: l.mapsUrl || l.maps_url,
@@ -251,6 +406,7 @@ function downloadCSV(rows, name) {
   a.click();
 }
 
+/* ─── Theme ─── */
 function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const newTheme = isDark ? 'light' : 'dark';
@@ -271,7 +427,7 @@ function initTheme() {
   }
 }
 
-
+/* ─── Auth hooks ─── */
 function startProtectedApp() {
   document.getElementById("app").style.display = "block";
   initTheme();
@@ -281,7 +437,6 @@ function startProtectedApp() {
 function esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-
 </script>
 
 <script>
@@ -293,7 +448,5 @@ window.addEventListener("load", function () {
   }
 });
 </script>
-
 </body>
 </html>
-
