@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lead Generator Cloud App</title>
+<title>Arun's Lead Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root{--bg:#f5f6fa;--card:#fff;--surface:#fff;--border:#e2e6f0;--text:#162033;--muted:#69758c;--accent:#00a96e;--accent2:#0077cc;--danger:#d92d20;--warn:#b65c00;--shadow:0 8px 30px rgba(20,30,50,.08);--radius:14px;--sans:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--input-bg:#fff;--th-bg:#f9fafb;--secondary-btn-bg:#eef3f8}[data-theme="dark"]{--bg:#0f1117;--card:#1a1d27;--surface:#1a1d27;--border:#2a2f3d;--text:#e8eaf0;--muted:#8892a4;--accent:#00c97f;--accent2:#3b9eff;--danger:#f87171;--warn:#fbbf24;--shadow:0 8px 30px rgba(0,0,0,.4);--input-bg:#12151f;--th-bg:#141720;--secondary-btn-bg:#21253a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);transition:background .2s,color .2s}.theme-toggle{margin-left:auto;background:var(--secondary-btn-bg);border:1px solid var(--border);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:700;font-family:var(--sans);cursor:pointer;color:var(--text);display:flex;align-items:center;gap:6px;transition:background .2s,border-color .2s}.theme-toggle:hover{border-color:var(--accent)}.topbar{height:58px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 26px;gap:10px;position:sticky;top:0;z-index:5}.logo{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff}.name{font-weight:800}.tag{font-size:11px;color:var(--accent);background:rgba(0,169,110,.1);border:1px solid rgba(0,169,110,.18);padding:3px 9px;border-radius:50px}.wrap{max-width:1120px;margin:0 auto;padding:30px 18px 70px}.hero{margin-bottom:22px}.hero h1{font-size:30px;margin:0 0 6px;letter-spacing:-.8px}.hero p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:var(--radius);padding:22px;margin-bottom:16px}.card-title{font-family:var(--mono);text-transform:uppercase;font-size:11px;color:var(--muted);letter-spacing:1px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:18px}.form-group{display:flex;flex-direction:column;gap:6px}.full{grid-column:1/-1}label{font-size:12px;font-weight:700}input,select,textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 12px;font-size:14px;font-family:var(--sans);background:var(--input-bg);color:var(--text);transition:background .2s,border-color .2s,color .2s}input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(0,169,110,.1)}button{border:none;border-radius:10px;padding:11px 15px;font-weight:800;font-family:var(--sans);cursor:pointer}.btn{background:var(--accent);color:white}.btn.secondary{background:var(--secondary-btn-bg);color:var(--text);border:1px solid var(--border)}.btn:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:9px;align-items:center}.status{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px}.banner{padding:12px 14px;background:rgba(0,119,204,.08);color:#075985;border:1px solid rgba(0,119,204,.16);border-radius:12px;margin-bottom:14px;font-size:13px;line-height:1.5}.error{display:none;padding:12px 14px;background:#fff1f0;color:var(--danger);border:1px solid #ffd3cf;border-left:4px solid var(--danger);border-radius:12px;margin-bottom:14px}.error.show{display:block}.log{display:none;background:#111827;color:#cbd5e1;border-radius:12px;padding:14px;max-height:150px;overflow:auto;font-family:var(--mono);font-size:11px;line-height:1.7;margin-bottom:16px}.log.show{display:block}.log .ok{color:#34d399}.log .warn{color:#fbbf24}.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{background:var(--secondary-btn-bg);border:1px solid var(--border);color:var(--text)}.tab.active{background:var(--accent);color:#fff}.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:auto;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse;font-size:13px;min-width:900px}th{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--muted);text-align:left;background:var(--th-bg);padding:12px;border-bottom:1px solid var(--border)}td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}.badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:999px;background:rgba(0,169,110,.12);color:var(--accent);border:1px solid rgba(0,169,110,.18)}.maps{color:var(--accent2);text-decoration:none;font-weight:700}.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.small{font-size:12px;color:var(--muted)}.hidden{display:none}
@@ -16,12 +16,10 @@ select:disabled{opacity:.5;cursor:not-allowed}
 </head>
 <body>
 <div id="app" style="display:none;">
-<header class="topbar"><div class="logo">🎯</div><div class="name">Lead Generator</div><div class="tag">Cloud + Database</div><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span></button><button class="auth-logout" onclick="logoutUser()">Logout</button></header>
+<header class="topbar"><div class="logo">🎯</div><div class="name">Arun's Lead Generator</div><div class="tag">Cloud + Database</div><button class="theme-toggle" id="themeToggle" onclick="toggleTheme()"><span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span></button><button class="auth-logout" onclick="logoutUser()">Logout</button></header>
 <main class="wrap">
   <section class="hero"><h1>Find businesses without websites</h1><p>Search local businesses worldwide, save results to database, manage leads, and export CSV.</p></section>
-  <div class="banner">This cloud-ready version uses your FastAPI backend, Google Places API, and PostgreSQL/Supabase. Keep your Google API key on the server only — never inside this HTML.</div>
 
-  <div class="tabs">
     <button class="tab active" id="searchTab" onclick="showTab('search')">Search</button>
     <button class="tab" id="leadsTab" onclick="showTab('leads'); loadSavedLeads();">Saved Leads</button>
   </div>
@@ -36,13 +34,27 @@ select:disabled{opacity:.5;cursor:not-allowed}
           <div id="apiStatus" class="status">Use blank value when frontend and backend are deployed together.</div>
         </div>
 
-        <!-- WORLDWIDE LOCATION SELECTORS -->
         <div class="form-group full">
           <label>Country</label>
           <select id="countrySelect" onchange="onCountryChange()">
-            <option value="">— Loading countries… —</option>
+            <option value="">— Select Country —</option>
+            <option value="Australia">Australia</option>
+            <option value="Canada">Canada</option>
+            <option value="Germany">Germany</option>
+            <option value="India">India</option>
+            <option value="Ireland">Ireland</option>
+            <option value="Malaysia">Malaysia</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="New Zealand">New Zealand</option>
+            <option value="Philippines">Philippines</option>
+            <option value="Qatar">Qatar</option>
+            <option value="Saudi Arabia">Saudi Arabia</option>
+            <option value="Singapore">Singapore</option>
+            <option value="South Africa">South Africa</option>
+            <option value="United Arab Emirates">United Arab Emirates</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="United States">United States</option>
           </select>
-          <div id="countryLoading" class="loc-loading">Loading countries…</div>
         </div>
         <div class="form-group">
           <label>State / Region / Province</label>
@@ -104,31 +116,6 @@ function base() {
 /* ─── Init ─── */
 function init() {
   updateRadius(document.getElementById('radius').value);
-  loadCountries();
-}
-
-/* ─── Country loader ─── */
-async function loadCountries() {
-  const sel = document.getElementById('countrySelect');
-  const loader = document.getElementById('countryLoading');
-  loader.classList.add('show');
-  try {
-    const r = await fetch(GEO_BASE + '/countries');
-    const d = await r.json();
-    const countries = (d.data || []).map(c => c.country).sort();
-    sel.innerHTML = '<option value="">— Select Country —</option>';
-    countries.forEach(c => {
-      const o = document.createElement('option');
-      o.value = c;
-      o.textContent = c;
-      sel.appendChild(o);
-    });
-  } catch (e) {
-    sel.innerHTML = '<option value="">⚠ Could not load — type city manually</option>';
-    document.getElementById('cityManualWrap').classList.remove('hidden');
-  } finally {
-    loader.classList.remove('show');
-  }
 }
 
 /* ─── Country → State ─── */
