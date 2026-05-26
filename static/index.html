@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lead Generator — Cloud App</title>
+<title>Arun's Lead Generator — Cloud App</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -584,8 +584,13 @@ textarea {
 .lead-search-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .lead-search-row input { flex: 1; min-width: 200px; }
 
-/* HIDDEN */
-.hidden { display: none !important; }
+@media (max-width: 900px) {
+  .saved-filter-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 560px) {
+  .saved-filter-grid { grid-template-columns: 1fr !important; }
+}
+
 
 /* ANIMATIONS */
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -608,7 +613,7 @@ textarea {
 <!-- TOPBAR -->
 <header class="topbar">
   <div class="logo">🎯</div>
-  <div class="app-name">Lead Generator</div>
+  <div class="app-name">Arun's Lead Generator</div>
   <div class="app-tag">CLOUD + DB</div>
   <div class="topbar-actions">
     <button class="btn-icon" onclick="toggleTheme()">
@@ -793,15 +798,49 @@ textarea {
 
   <!-- LEADS PANEL -->
   <section id="leadsPanel" class="hidden">
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <span class="results-count">Saved Leads</span>
-        <span style="font-size:12px;color:var(--muted)">from your database</span>
+    <div class="toolbar" style="flex-direction:column;align-items:stretch;gap:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div class="toolbar-left">
+          <span class="results-count">Saved Leads</span>
+          <span style="font-size:12px;color:var(--muted)">from your database</span>
+          <span class="count-chip" id="savedCountBadge" style="margin-left:4px;">0</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button class="btn-sec" onclick="clearSavedFilters()">✕ Clear Filters</button>
+          <button class="btn-sec" onclick="loadSavedLeads()">↺ Refresh</button>
+          <button class="btn-green" onclick="downloadCSV(filteredSavedLeads(), 'saved_leads')">⬇ Export CSV</button>
+        </div>
       </div>
-      <div class="toolbar-right lead-search-row">
-        <input id="leadSearch" placeholder="Filter by name, city, category..." style="min-width:220px"/>
-        <button class="btn-sec" onclick="loadSavedLeads()">↺ Refresh</button>
-        <button class="btn-green" onclick="downloadCSV(savedLeads, 'saved_leads')">⬇ Export CSV</button>
+      <!-- FILTER ROW -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1.5fr;gap:10px;align-items:end;" class="saved-filter-grid">
+        <div class="form-group" style="margin:0;">
+          <label>Country</label>
+          <select id="filterCountry" onchange="onFilterCountryChange()" style="font-size:12px;padding:8px 12px;">
+            <option value="">All Countries</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>State</label>
+          <select id="filterState" onchange="onFilterStateChange()" style="font-size:12px;padding:8px 12px;">
+            <option value="">All States</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>City</label>
+          <select id="filterCity" onchange="renderFilteredLeads()" style="font-size:12px;padding:8px 12px;">
+            <option value="">All Cities</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Category</label>
+          <select id="filterCategory" onchange="renderFilteredLeads()" style="font-size:12px;padding:8px 12px;">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Search</label>
+          <input id="leadSearch" placeholder="Filter by name..." oninput="renderFilteredLeads()" style="font-size:13px;padding:8px 12px;"/>
+        </div>
       </div>
     </div>
     <div class="table-wrap">
@@ -1129,42 +1168,132 @@ function renderCurrent() {
 async function loadSavedLeads() {
   const tbody = document.getElementById('savedBody');
   try {
-    const q = document.getElementById('leadSearch').value.trim();
-    const r = await fetch(base() + '/leads?limit=500' + (q ? '&q=' + encodeURIComponent(q) : ''));
+    const r = await fetch(base() + '/leads?limit=500');
     const d = await r.json();
     savedLeads = d.leads || [];
-
-    if (!savedLeads.length) {
-      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">📋</div><p>No saved leads yet.<br/>Run a search to generate your first leads.</p></div></td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = savedLeads.map(l => `
-      <tr>
-        <td style="color:var(--muted);font-family:var(--mono);font-size:11px">${l.id}</td>
-        <td>
-          <strong>${esc(l.business_name)}</strong><br/>
-          <span style="font-size:11px;color:var(--muted)">${esc(l.search_query || '')}</span>
-        </td>
-        <td style="color:var(--muted)">${esc(l.category)}</td>
-        <td style="font-size:12px">${esc(l.address)}</td>
-        <td style="font-size:12px">${esc(l.phone) || '—'}</td>
-        <td>
-          <select class="status-select" onchange="updateLead(${l.id}, this.value, null)">
-            <option ${l.lead_status==='New'?'selected':''}>New</option>
-            <option ${l.lead_status==='Contacted'?'selected':''}>Contacted</option>
-            <option ${l.lead_status==='Interested'?'selected':''}>Interested</option>
-            <option ${l.lead_status==='Not Interested'?'selected':''}>Not Interested</option>
-            <option ${l.lead_status==='Closed'?'selected':''}>Closed</option>
-          </select>
-        </td>
-        <td><textarea rows="2" onchange="updateLead(${l.id}, null, this.value)">${esc(l.notes || '')}</textarea></td>
-        <td>${l.maps_url ? `<a class="maps-link" target="_blank" href="${esc(l.maps_url)}">View ↗</a>` : '—'}</td>
-      </tr>`).join('');
+    populateSavedFilters();
+    renderFilteredLeads();
   } catch (e) {
     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px">Could not load saved leads. Check backend connection.</td></tr>`;
   }
 }
+
+function populateSavedFilters() {
+  // Country filter
+  const countries = [...new Set(savedLeads.map(l => l.country).filter(Boolean))].sort();
+  const fCountry = document.getElementById('filterCountry');
+  const prevCountry = fCountry.value;
+  fCountry.innerHTML = '<option value="">All Countries</option>' +
+    countries.map(c => `<option value="${c}"${c===prevCountry?' selected':''}>${c}</option>`).join('');
+
+  // Category filter — unique categories from data
+  const cats = [...new Set(savedLeads.map(l => l.category).filter(Boolean))].sort();
+  const fCat = document.getElementById('filterCategory');
+  const prevCat = fCat.value;
+  fCat.innerHTML = '<option value="">All Categories</option>' +
+    cats.map(c => `<option value="${c}"${c===prevCat?' selected':''}>${esc(c)}</option>`).join('');
+
+  // Rebuild state/city based on current country selection
+  rebuildStateFilter();
+}
+
+function onFilterCountryChange() {
+  rebuildStateFilter();
+  renderFilteredLeads();
+}
+
+function onFilterStateChange() {
+  rebuildCityFilter();
+  renderFilteredLeads();
+}
+
+function rebuildStateFilter() {
+  const country = document.getElementById('filterCountry').value;
+  const leads = country ? savedLeads.filter(l => l.country === country) : savedLeads;
+  const states = [...new Set(leads.map(l => l.state).filter(Boolean))].sort();
+  const fState = document.getElementById('filterState');
+  fState.innerHTML = '<option value="">All States</option>' +
+    states.map(s => `<option value="${s}">${esc(s)}</option>`).join('');
+  rebuildCityFilter();
+}
+
+function rebuildCityFilter() {
+  const country = document.getElementById('filterCountry').value;
+  const state   = document.getElementById('filterState').value;
+  let leads = savedLeads;
+  if (country) leads = leads.filter(l => l.country === country);
+  if (state)   leads = leads.filter(l => l.state === state);
+  const cities = [...new Set(leads.map(l => l.city).filter(Boolean))].sort();
+  const fCity = document.getElementById('filterCity');
+  fCity.innerHTML = '<option value="">All Cities</option>' +
+    cities.map(c => `<option value="${c}">${esc(c)}</option>`).join('');
+}
+
+function filteredSavedLeads() {
+  const country  = document.getElementById('filterCountry').value.toLowerCase();
+  const state    = document.getElementById('filterState').value.toLowerCase();
+  const city     = document.getElementById('filterCity').value.toLowerCase();
+  const category = document.getElementById('filterCategory').value.toLowerCase();
+  const q        = document.getElementById('leadSearch').value.trim().toLowerCase();
+  return savedLeads.filter(l => {
+    if (country  && (l.country  || '').toLowerCase() !== country)  return false;
+    if (state    && (l.state    || '').toLowerCase() !== state)    return false;
+    if (city     && (l.city     || '').toLowerCase() !== city)     return false;
+    if (category && (l.category || '').toLowerCase() !== category) return false;
+    if (q) {
+      const hay = [l.business_name, l.address, l.category, l.city, l.state, l.country, l.phone]
+        .map(x => (x||'').toLowerCase()).join(' ');
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function clearSavedFilters() {
+  document.getElementById('filterCountry').value  = '';
+  document.getElementById('filterState').value    = '';
+  document.getElementById('filterCity').value     = '';
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('leadSearch').value     = '';
+  rebuildStateFilter();
+  renderFilteredLeads();
+}
+
+function renderFilteredLeads() {
+  const tbody  = document.getElementById('savedBody');
+  const leads  = filteredSavedLeads();
+  const badge  = document.getElementById('savedCountBadge');
+  if (badge) badge.textContent = leads.length;
+
+  if (!leads.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">📋</div><p>No leads match the current filters.<br/>Try adjusting or clearing the filters above.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = leads.map(l => `
+    <tr>
+      <td style="color:var(--muted);font-family:var(--mono);font-size:11px">${l.id}</td>
+      <td>
+        <strong>${esc(l.business_name)}</strong><br/>
+        <span style="font-size:11px;color:var(--muted)">${esc(l.search_query || '')}</span>
+      </td>
+      <td style="color:var(--muted)">${esc(l.category)}</td>
+      <td style="font-size:12px">${esc(l.address)}</td>
+      <td style="font-size:12px">${esc(l.phone) || '—'}</td>
+      <td>
+        <select class="status-select" onchange="updateLead(${l.id}, this.value, null)">
+          <option ${l.lead_status==='New'?'selected':''}>New</option>
+          <option ${l.lead_status==='Contacted'?'selected':''}>Contacted</option>
+          <option ${l.lead_status==='Interested'?'selected':''}>Interested</option>
+          <option ${l.lead_status==='Not Interested'?'selected':''}>Not Interested</option>
+          <option ${l.lead_status==='Closed'?'selected':''}>Closed</option>
+        </select>
+      </td>
+      <td><textarea rows="2" onchange="updateLead(${l.id}, null, this.value)">${esc(l.notes || '')}</textarea></td>
+      <td>${l.maps_url ? `<a class="maps-link" target="_blank" href="${esc(l.maps_url)}">View ↗</a>` : '—'}</td>
+    </tr>`).join('');
+}
+
 
 async function updateLead(id, status, notes) {
   const body = {};
