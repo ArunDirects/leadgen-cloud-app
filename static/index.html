@@ -798,48 +798,51 @@ textarea {
 
   <!-- LEADS PANEL -->
   <section id="leadsPanel" class="hidden">
-    <div class="toolbar" style="flex-direction:column;align-items:stretch;gap:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-        <div class="toolbar-left">
-          <span class="results-count">Saved Leads</span>
-          <span style="font-size:12px;color:var(--muted)">from your database</span>
-          <span class="count-chip" id="savedCountBadge" style="margin-left:4px;">0</span>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-          <button class="btn-sec" onclick="clearSavedFilters()">✕ Clear Filters</button>
-          <button class="btn-sec" onclick="loadSavedLeads()">↺ Refresh</button>
-          <button class="btn-green" onclick="downloadCSV(filteredSavedLeads(), 'saved_leads')">⬇ Export CSV</button>
-        </div>
+
+    <!-- Title row -->
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="results-count">Saved Leads</span>
+        <span style="font-size:12px;color:var(--muted)">from your database</span>
+        <span class="count-chip" id="savedCountBadge">0</span>
       </div>
-      <!-- FILTER ROW -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1.5fr;gap:10px;align-items:end;" class="saved-filter-grid">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <button class="btn-sec" onclick="clearSavedFilters()">✕ Clear</button>
+        <button class="btn-sec" onclick="loadSavedLeads()">↺ Refresh</button>
+        <button class="btn-green" onclick="downloadCSV(filteredSavedLeads(), 'saved_leads')">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="card" style="padding:16px 20px;margin-bottom:14px;">
+      <div class="saved-filter-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1.6fr;gap:12px;align-items:end;">
         <div class="form-group" style="margin:0;">
           <label>Country</label>
-          <select id="filterCountry" onchange="onFilterCountryChange()" style="font-size:12px;padding:8px 12px;">
+          <select id="filterCountry" onchange="onFilterCountryChange()">
             <option value="">All Countries</option>
           </select>
         </div>
         <div class="form-group" style="margin:0;">
-          <label>State</label>
-          <select id="filterState" onchange="onFilterStateChange()" style="font-size:12px;padding:8px 12px;">
+          <label>State / Region</label>
+          <select id="filterState" onchange="onFilterStateChange()">
             <option value="">All States</option>
           </select>
         </div>
         <div class="form-group" style="margin:0;">
           <label>City</label>
-          <select id="filterCity" onchange="renderFilteredLeads()" style="font-size:12px;padding:8px 12px;">
+          <select id="filterCity" onchange="renderFilteredLeads()">
             <option value="">All Cities</option>
           </select>
         </div>
         <div class="form-group" style="margin:0;">
           <label>Category</label>
-          <select id="filterCategory" onchange="renderFilteredLeads()" style="font-size:12px;padding:8px 12px;">
+          <select id="filterCategory" onchange="renderFilteredLeads()">
             <option value="">All Categories</option>
           </select>
         </div>
         <div class="form-group" style="margin:0;">
-          <label>Search</label>
-          <input id="leadSearch" placeholder="Filter by name..." oninput="renderFilteredLeads()" style="font-size:13px;padding:8px 12px;"/>
+          <label>Search by name</label>
+          <input id="leadSearch" placeholder="e.g. Coffee House..." oninput="renderFilteredLeads()"/>
         </div>
       </div>
     </div>
@@ -1179,23 +1182,30 @@ async function loadSavedLeads() {
 }
 
 function populateSavedFilters() {
-  // Country filter
-  const countries = [...new Set(savedLeads.map(l => l.country).filter(Boolean))].sort();
+  // Country — leads may store country as code (US/IN) or full name; normalise both
+  const countrySet = new Set();
+  savedLeads.forEach(l => {
+    const raw = l.country || '';
+    // Map code → full name if it's a short code
+    const resolved = COUNTRY_NAMES[raw.toUpperCase()] || raw;
+    if (resolved) countrySet.add(resolved);
+  });
+  const countries = [...countrySet].sort();
   const fCountry = document.getElementById('filterCountry');
   const prevCountry = fCountry.value;
   fCountry.innerHTML = '<option value="">All Countries</option>' +
     countries.map(c => `<option value="${c}"${c===prevCountry?' selected':''}>${c}</option>`).join('');
 
-  // Category filter — unique categories from data
+  // Category — unique categories from data
   const cats = [...new Set(savedLeads.map(l => l.category).filter(Boolean))].sort();
   const fCat = document.getElementById('filterCategory');
   const prevCat = fCat.value;
   fCat.innerHTML = '<option value="">All Categories</option>' +
     cats.map(c => `<option value="${c}"${c===prevCat?' selected':''}>${esc(c)}</option>`).join('');
 
-  // Rebuild state/city based on current country selection
   rebuildStateFilter();
 }
+
 
 function onFilterCountryChange() {
   rebuildStateFilter();
@@ -1207,9 +1217,14 @@ function onFilterStateChange() {
   renderFilteredLeads();
 }
 
+function resolveCountry(raw) {
+  const r = raw || '';
+  return (COUNTRY_NAMES[r.toUpperCase()] || r).toLowerCase();
+}
+
 function rebuildStateFilter() {
-  const country = document.getElementById('filterCountry').value;
-  const leads = country ? savedLeads.filter(l => l.country === country) : savedLeads;
+  const country = document.getElementById('filterCountry').value.toLowerCase();
+  const leads = country ? savedLeads.filter(l => resolveCountry(l.country) === country) : savedLeads;
   const states = [...new Set(leads.map(l => l.state).filter(Boolean))].sort();
   const fState = document.getElementById('filterState');
   fState.innerHTML = '<option value="">All States</option>' +
@@ -1218,10 +1233,10 @@ function rebuildStateFilter() {
 }
 
 function rebuildCityFilter() {
-  const country = document.getElementById('filterCountry').value;
+  const country = document.getElementById('filterCountry').value.toLowerCase();
   const state   = document.getElementById('filterState').value;
   let leads = savedLeads;
-  if (country) leads = leads.filter(l => l.country === country);
+  if (country) leads = leads.filter(l => resolveCountry(l.country) === country);
   if (state)   leads = leads.filter(l => l.state === state);
   const cities = [...new Set(leads.map(l => l.city).filter(Boolean))].sort();
   const fCity = document.getElementById('filterCity');
@@ -1231,14 +1246,14 @@ function rebuildCityFilter() {
 
 function filteredSavedLeads() {
   const country  = document.getElementById('filterCountry').value.toLowerCase();
-  const state    = document.getElementById('filterState').value.toLowerCase();
-  const city     = document.getElementById('filterCity').value.toLowerCase();
+  const state    = document.getElementById('filterState').value;
+  const city     = document.getElementById('filterCity').value;
   const category = document.getElementById('filterCategory').value.toLowerCase();
   const q        = document.getElementById('leadSearch').value.trim().toLowerCase();
   return savedLeads.filter(l => {
-    if (country  && (l.country  || '').toLowerCase() !== country)  return false;
-    if (state    && (l.state    || '').toLowerCase() !== state)    return false;
-    if (city     && (l.city     || '').toLowerCase() !== city)     return false;
+    if (country  && resolveCountry(l.country) !== country) return false;
+    if (state    && (l.state    || '') !== state)          return false;
+    if (city     && (l.city     || '') !== city)           return false;
     if (category && (l.category || '').toLowerCase() !== category) return false;
     if (q) {
       const hay = [l.business_name, l.address, l.category, l.city, l.state, l.country, l.phone]
@@ -1248,6 +1263,7 @@ function filteredSavedLeads() {
     return true;
   });
 }
+
 
 function clearSavedFilters() {
   document.getElementById('filterCountry').value  = '';
