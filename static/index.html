@@ -690,9 +690,17 @@ textarea {
         <!-- City -->
         <div class="form-group">
           <label>City</label>
-          <select id="citySelect">
+          <select id="citySelect" onchange="populateAreas()">
             <option value="">— Select State First —</option>
           </select>
+        </div>
+
+        <!-- Area / Locality -->
+        <div class="form-group full">
+          <label>Area / Locality (optional)</label>
+          <select id="areaSelect" class="hidden"></select>
+          <input id="areaText" type="text" placeholder="Select a city first to optionally narrow by area"/>
+          <div id="areaNote" class="api-status"></div>
         </div>
 
         <!-- Category -->
@@ -950,6 +958,74 @@ const COUNTRY_NAMES = {
   NL:'Netherlands', CA:'Canada'
 };
 
+// Curated neighborhood/area lists for major cities. Not every city in
+// LOCATIONS has an entry here — for cities without curated data, the UI
+// falls back to a free-text "Area" field so users can still type one in.
+// Singapore is intentionally omitted: its "city" field already represents
+// neighborhood-level areas (e.g. Orchard, Marina Bay), so a third tier
+// would just duplicate it.
+const AREAS = {
+  US: {
+    "New York City": ["Manhattan","Brooklyn","Queens","The Bronx","Staten Island","Harlem","SoHo","Upper East Side","Upper West Side","Chelsea","Greenwich Village","Williamsburg"],
+    "Los Angeles": ["Downtown LA","Hollywood","Santa Monica","Venice","Beverly Hills","West Hollywood","Silver Lake","Echo Park","Koreatown","Westwood","Culver City"],
+    "Chicago": ["Downtown / Loop","Lincoln Park","Wicker Park","Lakeview","River North","Hyde Park","Pilsen","Logan Square","West Loop"],
+    "San Francisco": ["Downtown / Financial District","Mission District","SoMa","Castro","Haight-Ashbury","Marina District","Nob Hill","Chinatown","Sunset District"],
+    "Houston": ["Downtown","Midtown","The Heights","Montrose","River Oaks","Galleria Area","Memorial","Sugar Land"],
+    "Miami": ["Downtown Miami","South Beach","Brickell","Wynwood","Little Havana","Coral Gables","Coconut Grove","Design District"],
+    "Seattle": ["Downtown","Capitol Hill","Ballard","Fremont","Queen Anne","Belltown","University District"],
+    "Boston": ["Downtown","Back Bay","Beacon Hill","South End","North End","Fenway","Cambridge / Harvard Square"]
+  },
+  UK: {
+    "London": ["Westminster","Camden","Islington","Shoreditch","Kensington","Chelsea","Greenwich","Hackney","Brixton","Croydon","Canary Wharf","Notting Hill"],
+    "Manchester": ["City Centre","Northern Quarter","Ancoats","Didsbury","Salford Quays","Chorlton"],
+    "Birmingham": ["City Centre","Digbeth","Jewellery Quarter","Moseley","Edgbaston"],
+    "Liverpool": ["City Centre","Albert Dock","Anfield","Toxteth","Wavertree"],
+    "Edinburgh": ["Old Town","New Town","Leith","Morningside","Stockbridge"]
+  },
+  DE: {
+    "Berlin": ["Mitte","Kreuzberg","Friedrichshain","Charlottenburg","Prenzlauer Berg","Neukölln","Schöneberg","Tempelhof"],
+    "Munich": ["Altstadt","Schwabing","Maxvorstadt","Bogenhausen","Sendling","Haidhausen"],
+    "Hamburg": ["Altona","St. Pauli","Eimsbüttel","HafenCity","Winterhude"],
+    "Cologne": ["Altstadt","Ehrenfeld","Deutz","Nippes","Lindenthal"],
+    "Frankfurt": ["Innenstadt","Sachsenhausen","Bornheim","Westend","Nordend"]
+  },
+  IE: {
+    "Dublin": ["Dublin 1 (North City)","Dublin 2 (South City)","Dublin 4 (Ballsbridge)","Dublin 6 (Rathmines)","Dublin 8 (Liberties)","Temple Bar","Dún Laoghaire","Clontarf"],
+    "Cork": ["City Centre","Douglas","Blackrock","Ballincollig","Bishopstown"]
+  },
+  SA: {
+    "Riyadh": ["Al Olaya","Al Malaz","Al Murabba","King Fahd District","Al Sulaimaniyah","Diplomatic Quarter","Al Nakheel","Al Yasmin"],
+    "Jeddah": ["Al Balad","Al Hamra","Al Rawdah","Al Zahra","Obhur"],
+    "Dammam": ["Al Faisaliyah","Al Shati","Al Adamah","Uhud"]
+  },
+  IN: {
+    "Mumbai": ["Andheri","Bandra","Borivali","Colaba","Dadar","Goregaon","Juhu","Malad","Powai","Worli","Thane West","Navi Mumbai - Vashi"],
+    "Bengaluru": ["Indiranagar","Koramangala","Whitefield","Jayanagar","HSR Layout","Electronic City","MG Road","Malleshwaram","JP Nagar"],
+    "New Delhi": ["Connaught Place","Karol Bagh","Saket","Dwarka","Lajpat Nagar","Rohini","Vasant Kunj","Hauz Khas","Greater Kailash"],
+    "Hyderabad": ["Banjara Hills","Jubilee Hills","Gachibowli","Madhapur","Secunderabad","Kondapur","Begumpet","Hitech City","Ameerpet"],
+    "Chennai": ["T. Nagar","Adyar","Anna Nagar","Velachery","Nungambakkam","Mylapore","OMR / Sholinganallur","Besant Nagar"],
+    "Pune": ["Koregaon Park","Kothrud","Hinjewadi","Viman Nagar","Baner","Hadapsar","Aundh"],
+    "Kolkata": ["Park Street","Salt Lake","Howrah","Ballygunge","New Town","Behala","Gariahat"]
+  },
+  AU: {
+    "Sydney": ["CBD","Bondi","Parramatta","Manly","Surry Hills","Chatswood","Newtown","Darling Harbour"],
+    "Melbourne": ["CBD","St Kilda","Fitzroy","Southbank","Carlton","Richmond","Docklands"],
+    "Brisbane": ["CBD","South Bank","Fortitude Valley","New Farm","West End"],
+    "Perth": ["CBD","Fremantle","Subiaco","Joondalup","Scarborough"]
+  },
+  NL: {
+    "Amsterdam": ["Centrum","De Pijp","Jordaan","Oud-West","Noord","Zuidoost","Westerpark"],
+    "Rotterdam": ["Centrum","Kralingen","Delfshaven","Noord","Feijenoord"],
+    "Utrecht": ["Binnenstad","Lombok","Oudwijk","Overvecht"]
+  },
+  CA: {
+    "Toronto": ["Downtown","Scarborough","North York","Etobicoke","The Annex","Yorkville","Liberty Village","Leslieville"],
+    "Vancouver": ["Downtown","Kitsilano","Yaletown","West End","Mount Pleasant","Commercial Drive"],
+    "Montreal": ["Old Montreal","Plateau Mont-Royal","Downtown","Mile End","Westmount"],
+    "Calgary": ["Downtown","Kensington","Inglewood","Beltline","Bridgeland"]
+  }
+};
+
 let currentCountry = 'US';
 
 let currentLeads = [];
@@ -960,6 +1036,7 @@ let savedLeads = [];
 function selectCountry(code) {
   currentCountry = code;
   populateStates();
+  populateAreas();
 }
 
 function populateStates() {
@@ -975,10 +1052,44 @@ function populateCities() {
   const state = document.getElementById('stateSelect').value;
   const el = document.getElementById('citySelect');
   el.innerHTML = '<option value="">— Select City —</option>';
-  if (!state) return;
-  (LOCATIONS[currentCountry][state] || []).forEach(c => {
-    el.innerHTML += `<option value="${c}">${c}</option>`;
-  });
+  if (state) {
+    (LOCATIONS[currentCountry][state] || []).forEach(c => {
+      el.innerHTML += `<option value="${c}">${c}</option>`;
+    });
+  }
+  populateAreas();
+}
+
+function populateAreas() {
+  const city = document.getElementById('citySelect').value;
+  const areaSelect = document.getElementById('areaSelect');
+  const areaText = document.getElementById('areaText');
+  const note = document.getElementById('areaNote');
+  const list = (AREAS[currentCountry] && AREAS[currentCountry][city]) || null;
+
+  if (list) {
+    areaSelect.innerHTML = `<option value="">— Any area in ${city} —</option>` +
+      list.map(a => `<option value="${a}">${a}</option>`).join('');
+    areaSelect.classList.remove('hidden');
+    areaText.classList.add('hidden');
+    areaText.value = '';
+    note.textContent = `${list.length} curated areas available for ${city}.`;
+  } else {
+    areaSelect.classList.add('hidden');
+    areaText.classList.remove('hidden');
+    areaText.value = '';
+    areaText.placeholder = city
+      ? `Type an area in ${city} (optional) — e.g. a neighborhood name`
+      : 'Select a city first to optionally narrow by area';
+    note.textContent = city ? 'No curated area list for this city yet — type one manually.' : '';
+  }
+}
+
+function getArea() {
+  const areaSelect = document.getElementById('areaSelect');
+  const areaText = document.getElementById('areaText');
+  if (!areaSelect.classList.contains('hidden')) return areaSelect.value;
+  return areaText.value.trim();
 }
 
 function toggleCustom() {
@@ -1052,12 +1163,13 @@ async function runSearch() {
   if (!category) return showError('Please enter or select a business category.');
 
   const country  = COUNTRY_NAMES[currentCountry] || currentCountry;
-  const location = `${city}, ${state}, ${country}`;
+  const area     = getArea();
+  const location = area ? `${area}, ${city}, ${state}, ${country}` : `${city}, ${state}, ${country}`;
   const runBtn   = document.getElementById('runBtn');
 
   runBtn.disabled = true;
   showStatus(true);
-  setStatus(`Searching "${category}" in ${city}...`);
+  setStatus(`Searching "${category}" in ${area ? area + ', ' : ''}${city}...`);
   log('Starting search for ' + location);
 
   try {
@@ -1071,7 +1183,8 @@ async function runSearch() {
         max_results: +document.getElementById('maxResults').value,
         city,
         state,
-        country
+        country,
+        area
       })
     });
 
@@ -1237,6 +1350,7 @@ function initTheme() {
 
 function init() {
   populateStates();
+  populateAreas();
   updateRadius(document.getElementById('radius').value);
 }
 
