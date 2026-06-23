@@ -101,6 +101,8 @@ class SearchRequest(BaseModel):
     max_results: int = Field(20, ge=1, le=60)
     city: Optional[str] = None
     state: Optional[str] = None
+    country: Optional[str] = None
+    area: Optional[str] = None
 
 
 class LeadUpdate(BaseModel):
@@ -123,8 +125,9 @@ def gfetch(url: str, params: Dict[str, Any]) -> Dict[str, Any]:
     return response.json()
 
 
-def geocode(address: str) -> Dict[str, Any]:
-    full_address = address if COUNTRY_SUFFIX.lower() in address.lower() else f"{address}, {COUNTRY_SUFFIX}"
+def geocode(address: str, country: Optional[str] = None) -> Dict[str, Any]:
+    suffix = country or COUNTRY_SUFFIX
+    full_address = address if suffix.lower() in address.lower() else f"{address}, {suffix}"
     data = gfetch(GEO_URL, {"address": full_address})
     if data.get("results"):
         loc = data["results"][0]["geometry"]["location"]
@@ -158,7 +161,7 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
         events.append({"type": type_, "msg": msg})
 
     emit(f'Geocoding "{payload.location}"...')
-    geo = geocode(payload.location)
+    geo = geocode(payload.location, payload.country)
     if "error" in geo:
         return {"error": geo["error"], "events": events}
 
@@ -172,11 +175,29 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
     for page in range(max_pages):
         emit(f'Fetching page {page + 1} for "{payload.query}" near {payload.location}...')
         if page_token:
-            emit("Waiting 2s for Google page token...", "info")
-            time.sleep(2.1)
+            emit("Waiting for Google page token to activate...", "info")
+            time.sleep(3.5)
 
         data = search_places(payload.query, lat, lng, payload.radius, page_token)
+
+        # Google's next_page_token sometimes isn't active yet even after a few
+        # seconds. If that happens, give it one more short retry before giving up
+        # on this page (rather than failing the entire search).
+        if page_token and data.get("status") == "INVALID_REQUEST":
+            emit("Page token not active yet, retrying once...", "warn")
+            time.sleep(2.5)
+            data = search_places(payload.query, lat, lng, payload.radius, page_token)
+
         if data.get("status") not in ("OK", "ZERO_RESULTS"):
+            if page_token and all_places:
+                # We already have results from earlier pages — don't discard
+                # them just because an extra page failed to load.
+                emit(
+                    f"⚠️ Could not fetch additional results ({data.get('status')}); "
+                    f"continuing with {len(all_places)} found so far.",
+                    "warn",
+                )
+                break
             return {
                 "error": f"Places search failed: {data.get('status')} — {data.get('error_message', '')}",
                 "events": events,
