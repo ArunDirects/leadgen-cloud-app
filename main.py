@@ -38,6 +38,7 @@ Base = declarative_base()
 
 GEO_URL    = "https://maps.googleapis.com/maps/api/geocode/json"
 SEARCH_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+NEARBY_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 DETAIL_URL = "https://maps.googleapis.com/maps/api/place/details/json"
 
 SOCIAL_PATTERNS = {
@@ -122,6 +123,8 @@ class SearchRequest(BaseModel):
     radius:      int = Field(8000, ge=1000, le=50000)
     max_results: int = Field(20, ge=1, le=60)
     mode:        str = Field("no_website")
+    min_reviews: int = Field(0, ge=0, le=10000)
+    search_all:  bool = Field(False)
     city:        Optional[str] = None
     state:       Optional[str] = None
     country:     Optional[str] = None
@@ -165,6 +168,15 @@ def search_places(query: str, lat: float, lng: float, radius: int,
     if page_token:
         params["pagetoken"] = page_token
     return gfetch(SEARCH_URL, params)
+
+
+def search_places_nearby(lat: float, lng: float, radius: int,
+                          page_token: Optional[str] = None) -> Dict[str, Any]:
+    """Fetch ALL businesses near a point, no category/keyword required."""
+    params = {"location": f"{lat},{lng}", "radius": radius, "type": "establishment"}
+    if page_token:
+        params["pagetoken"] = page_token
+    return gfetch(NEARBY_URL, params)
 
 
 def get_details(place_id: str) -> Dict[str, Any]:
@@ -311,19 +323,26 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
     all_places: List[Dict[str, Any]] = []
     page_token = None
     max_pages = min(3, (payload.max_results + 19) // 20)
+    search_label = "All Businesses (no category filter)" if payload.search_all else payload.query
 
     for page in range(max_pages):
-        emit(f'Fetching page {page + 1} for "{payload.query}" near {payload.location}...')
+        emit(f'Fetching page {page + 1} for "{search_label}" near {payload.location}...')
         if page_token:
             emit("Waiting for Google page token to activate...", "info")
             time.sleep(3.5)
 
-        data = search_places(payload.query, lat, lng, payload.radius, page_token)
+        if payload.search_all:
+            data = search_places_nearby(lat, lng, payload.radius, page_token)
+        else:
+            data = search_places(payload.query, lat, lng, payload.radius, page_token)
 
         if page_token and data.get("status") == "INVALID_REQUEST":
             emit("Page token not active yet, retrying once...", "warn")
             time.sleep(2.5)
-            data = search_places(payload.query, lat, lng, payload.radius, page_token)
+            if payload.search_all:
+                data = search_places_nearby(lat, lng, payload.radius, page_token)
+            else:
+                data = search_places(payload.query, lat, lng, payload.radius, page_token)
 
         if data.get("status") not in ("OK", "ZERO_RESULTS"):
             if page_token and all_places:
@@ -340,6 +359,8 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
             break
 
     emit(f"Total businesses found: {len(all_places)}", "ok")
+    if payload.min_reviews:
+        emit(f"Filtering to businesses with {payload.min_reviews}+ Google reviews...", "info")
 
     leads: List[Dict[str, Any]] = []
     today = str(date.today())
@@ -350,7 +371,12 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
         try:
             detail = get_details(place["place_id"])
             time.sleep(0.1)
-            website = detail.get("website", "")
+            website      = detail.get("website", "")
+            rating       = detail.get("rating")
+            review_count = detail.get("user_ratings_total") or 0
+
+            if payload.min_reviews and review_count < payload.min_reviews:
+                continue
 
             if is_has_website:
                 if not website:
@@ -366,8 +392,8 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
                     "phone":         detail.get("formatted_phone_number", ""),
                     "mapsUrl":       detail.get("url", f"https://www.google.com/maps/place/?q=place_id:{place['place_id']}"),
                     "website":       website,
-                    "rating":        detail.get("rating"),
-                    "reviewCount":   detail.get("user_ratings_total"),
+                    "rating":        rating,
+                    "reviewCount":   review_count,
                     "city":          payload.city or "",
                     "state":         payload.state or "",
                     "date":          today,
@@ -384,17 +410,19 @@ def run_google_search(payload: SearchRequest) -> Dict[str, Any]:
                 if website:
                     continue
                 leads.append({
-                    "name":     detail.get("name", place.get("name", "")),
-                    "category": ", ".join([t for t in detail.get("types", []) if t not in ("point_of_interest", "establishment")][:3]),
-                    "address":  detail.get("formatted_address", place.get("formatted_address", "")),
-                    "phone":    detail.get("formatted_phone_number", ""),
-                    "mapsUrl":  detail.get("url", f"https://www.google.com/maps/place/?q=place_id:{place['place_id']}"),
-                    "city":     payload.city or "",
-                    "state":    payload.state or "",
-                    "date":     today,
-                    "mode":     "no_website",
+                    "name":        detail.get("name", place.get("name", "")),
+                    "category":    ", ".join([t for t in detail.get("types", []) if t not in ("point_of_interest", "establishment")][:3]),
+                    "address":     detail.get("formatted_address", place.get("formatted_address", "")),
+                    "phone":       detail.get("formatted_phone_number", ""),
+                    "mapsUrl":     detail.get("url", f"https://www.google.com/maps/place/?q=place_id:{place['place_id']}"),
+                    "rating":      rating,
+                    "reviewCount": review_count,
+                    "city":        payload.city or "",
+                    "state":       payload.state or "",
+                    "date":        today,
+                    "mode":        "no_website",
                 })
-                emit(f"✅ [{len(leads)}] {leads[-1]['name']} — no website", "ok")
+                emit(f"✅ [{len(leads)}] {leads[-1]['name']} — no website ({review_count} reviews)", "ok")
 
         except Exception as exc:
             emit(f"⚠️ Skipped {place.get('name', '')}: {exc}", "warn")
