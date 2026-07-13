@@ -312,6 +312,7 @@ textarea { padding: 8px 10px; font-size: 12px; border-radius: 6px; resize: verti
         <div class="form-group full">
           <label>Business Category</label>
           <select id="categorySelect" onchange="toggleCustom()">
+            <option value="__all__">🌍 All Businesses (No Category — Search Everything Nearby)</option>
             <option value="restaurant">🍽️ Restaurant / Food</option>
             <option value="cafe coffee shop">☕ Cafe / Coffee Shop</option>
             <option value="bakery">🥐 Bakery</option>
@@ -339,11 +340,25 @@ textarea { padding: 8px 10px; font-size: 12px; border-radius: 6px; resize: verti
             <option value="digital marketing agency">📱 Digital Marketing Agency</option>
             <option value="custom">✏️ Custom Category</option>
           </select>
+          <div id="categoryNote" class="api-status hidden">🌍 Will search ALL business types nearby (uses Google Nearby Search, no keyword needed).</div>
         </div>
 
         <div id="customWrap" class="form-group full hidden">
           <label>Custom Category</label>
           <input id="customCategory" placeholder="e.g. dance school, coaching center, car wash..."/>
+        </div>
+
+        <div class="form-group full">
+          <label>Minimum Google Reviews</label>
+          <select id="minReviews">
+            <option value="0">No minimum — include all businesses</option>
+            <option value="10">10+ reviews</option>
+            <option value="25">25+ reviews</option>
+            <option value="50">50+ reviews</option>
+            <option value="100" selected>100+ reviews (established businesses)</option>
+            <option value="200">200+ reviews</option>
+            <option value="500">500+ reviews</option>
+          </select>
         </div>
 
         <div class="form-group full">
@@ -422,7 +437,7 @@ textarea { padding: 8px 10px; font-size: 12px; border-radius: 6px; resize: verti
           <thead>
             <tr>
               <th>ID</th><th>Mode</th><th>Business</th><th>Category</th>
-              <th>Address</th><th>Phone</th><th>Website</th>
+              <th>Address</th><th>Phone</th><th>Reviews</th><th>Website</th>
               <th>Top Pitch</th><th>Score</th>
               <th>Status</th><th>Notes</th><th>Maps</th>
             </tr>
@@ -556,7 +571,9 @@ function getArea() {
 }
 
 function toggleCustom() {
-  document.getElementById('customWrap').classList.toggle('hidden', document.getElementById('categorySelect').value !== 'custom');
+  const val = document.getElementById('categorySelect').value;
+  document.getElementById('customWrap').classList.toggle('hidden', val !== 'custom');
+  document.getElementById('categoryNote').classList.toggle('hidden', val !== '__all__');
 }
 
 function updateRadius(v) {
@@ -605,7 +622,9 @@ async function runSearch() {
   const state    = document.getElementById('stateSelect').value;
   const city     = document.getElementById('citySelect').value;
   const catEl    = document.getElementById('categorySelect');
-  const category = catEl.value === 'custom' ? document.getElementById('customCategory').value.trim() : catEl.value;
+  const searchAll = catEl.value === '__all__';
+  const category = searchAll ? 'All Businesses' : (catEl.value === 'custom' ? document.getElementById('customCategory').value.trim() : catEl.value);
+  const minReviews = +document.getElementById('minReviews').value || 0;
 
   if (!state)    return showError('Please select a state.');
   if (!city)     return showError('Please select a city.');
@@ -620,7 +639,7 @@ async function runSearch() {
   showStatus(true);
   const modeLabel = currentMode === 'has_website' ? 'Auditing websites' : 'Searching';
   setStatus(`${modeLabel}: "${category}" in ${area ? area + ', ' : ''}${city}...`);
-  log('Starting search for ' + location + ' [mode: ' + currentMode + ']');
+  log('Starting search for ' + location + ' [mode: ' + currentMode + (searchAll ? ', all categories' : '') + (minReviews ? `, min ${minReviews} reviews` : '') + ']');
 
   try {
     const r = await fetch(base() + '/search', {
@@ -631,6 +650,8 @@ async function runSearch() {
         radius: +document.getElementById('radius').value,
         max_results: +document.getElementById('maxResults').value,
         mode: currentMode,
+        min_reviews: minReviews,
+        search_all: searchAll,
         city, state, country, area
       })
     });
@@ -666,9 +687,9 @@ function renderCurrent() {
   section.classList.remove('hidden');
 
   if (!currentLeads.length) {
-    const colCount = currentMode === 'has_website' ? 9 : 7;
+    const colCount = currentMode === 'has_website' ? 9 : 8;
     head.innerHTML = '';
-    tbody.innerHTML = `<tr><td colspan="${colCount}"><div class="empty-state"><div class="icon">${currentMode === 'has_website' ? '🌐' : '✅'}</div><p>${currentMode === 'has_website' ? 'No businesses with websites found in this area.<br/>Try a different category or radius.' : 'All businesses in this area already have websites.<br/>Try a different category or larger radius.'}</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${colCount}"><div class="empty-state"><div class="icon">${currentMode === 'has_website' ? '🌐' : '✅'}</div><p>${currentMode === 'has_website' ? 'No businesses with websites found in this area.<br/>Try a different category, radius, or lower the minimum reviews.' : 'No matching businesses found.<br/>Try a different category, larger radius, or lower the minimum reviews.'}</p></div></td></tr>`;
     return;
   }
 
@@ -690,7 +711,7 @@ function renderCurrent() {
         <td>${l.mapsUrl ? `<a class="maps-link" target="_blank" href="${esc(l.mapsUrl)}">View ↗</a>` : '—'}</td>
       </tr>`).join('');
   } else {
-    head.innerHTML = `<tr><th>#</th><th>Business</th><th>Category</th><th>Address</th><th>Phone</th><th>Status</th><th>Maps</th></tr>`;
+    head.innerHTML = `<tr><th>#</th><th>Business</th><th>Category</th><th>Address</th><th>Phone</th><th>Reviews</th><th>Status</th><th>Maps</th></tr>`;
     tbody.innerHTML = currentLeads.map((l, i) => `
       <tr>
         <td style="color:var(--muted);font-family:var(--mono);font-size:11px">${i + 1}</td>
@@ -698,6 +719,7 @@ function renderCurrent() {
         <td style="color:var(--muted)">${esc(l.category)}</td>
         <td style="font-size:12px">${esc(l.address)}</td>
         <td style="font-size:12px">${esc(l.phone) || '<span style="color:var(--muted)">—</span>'}</td>
+        <td style="font-family:var(--mono);font-size:12px">${l.rating ? `⭐ ${l.rating} <span style="color:var(--muted)">(${l.reviewCount||0})</span>` : '<span style="color:var(--muted)">—</span>'}</td>
         <td><span class="no-site-tag">No Website</span></td>
         <td>${l.mapsUrl ? `<a class="maps-link" target="_blank" href="${esc(l.mapsUrl)}">View ↗</a>` : '—'}</td>
       </tr>`).join('');
@@ -747,7 +769,7 @@ async function loadSavedLeads() {
     savedLeads = d.leads || [];
 
     if (!savedLeads.length) {
-      tbody.innerHTML = `<tr><td colspan="12"><div class="empty-state"><div class="icon">📋</div><p>No saved leads yet.<br/>Run a search to generate your first leads.</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="13"><div class="empty-state"><div class="icon">📋</div><p>No saved leads yet.<br/>Run a search to generate your first leads.</p></div></td></tr>`;
       return;
     }
 
@@ -762,6 +784,7 @@ async function loadSavedLeads() {
         <td style="color:var(--muted)">${esc(l.category)}</td>
         <td style="font-size:12px">${esc(l.address)}</td>
         <td style="font-size:12px">${esc(l.phone) || '—'}</td>
+        <td style="font-family:var(--mono);font-size:12px">${l.rating ? `⭐ ${l.rating} <span style="color:var(--muted)">(${l.review_count||0})</span>` : '<span style="color:var(--muted)">—</span>'}</td>
         <td>${l.website ? `<a class="site-link" target="_blank" href="${esc(l.website)}" title="${esc(l.website)}">${esc(shortUrl(l.website))}</a>` : '<span style="color:var(--muted)">—</span>'}</td>
         <td>${pitchTag(l.top_pitch)}</td>
         <td>${scoreBar(l.overall_score)}</td>
@@ -778,7 +801,7 @@ async function loadSavedLeads() {
         <td>${l.maps_url ? `<a class="maps-link" target="_blank" href="${esc(l.maps_url)}">View ↗</a>` : '—'}</td>
       </tr>`).join('');
   } catch (e) {
-    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:40px">Could not load saved leads. Check backend connection.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:var(--muted);padding:40px">Could not load saved leads. Check backend connection.</td></tr>`;
   }
 }
 
